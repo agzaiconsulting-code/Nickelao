@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
@@ -88,6 +88,7 @@ const ABOUT_IMAGES = [
 
 function AboutSlider() {
   const [current, setCurrent] = useState(0)
+  const touchStartX = useRef<number | null>(null)
 
   useEffect(() => {
     const t = setInterval(() => setCurrent(c => (c + 1) % ABOUT_IMAGES.length), 4000)
@@ -97,8 +98,17 @@ function AboutSlider() {
   function prev() { setCurrent(c => (c - 1 + ABOUT_IMAGES.length) % ABOUT_IMAGES.length) }
   function next() { setCurrent(c => (c + 1) % ABOUT_IMAGES.length) }
 
+  function onTouchStart(e: React.TouchEvent) { touchStartX.current = e.touches[0].clientX }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return
+    const delta = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(delta) > 40) delta > 0 ? next() : prev()
+    touchStartX.current = null
+  }
+
   return (
-    <div style={{ aspectRatio: '4/5', borderRadius: 16, overflow: 'hidden', position: 'relative', background: 'var(--sage)' }}>
+    <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+      style={{ aspectRatio: '4/5', borderRadius: 16, overflow: 'hidden', position: 'relative', background: 'var(--sage)' }}>
       {ABOUT_IMAGES.map((src, i) => (
         <Image key={src} src={src} alt={`Nickelao Barber ${i + 1}`} fill
           style={{ objectFit: 'cover', opacity: i === current ? 1 : 0, transition: 'opacity 0.7s ease', position: 'absolute', inset: 0 }}
