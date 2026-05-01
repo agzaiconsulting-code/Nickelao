@@ -290,16 +290,15 @@ export default function LandingPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
-        .about-mobile { display: none; }
-        .about-desktop { display: block; }
+        .about-mobile-section { display: none; }
+        .about-desktop-section { display: block; }
         @media (max-width: 768px) {
           .landing-nav { display: none !important; }
-          .landing-about-grid { grid-template-columns: 1fr !important; }
           .landing-contact-grid { grid-template-columns: 1fr !important; }
           .landing-footer-inner { grid-template-columns: 1fr !important; gap: 2rem !important; }
           .hero h1 { font-size: 2.4rem !important; }
-          .about-mobile { display: block; }
-          .about-desktop { display: none; }
+          .about-mobile-section { display: block; }
+          .about-desktop-section { display: none; }
         }
       `}</style>
 
@@ -357,12 +356,11 @@ export default function LandingPage() {
       {/* SERVICES */}
       <ServicesSection />
 
-      {/* ABOUT */}
-      <section id="nosotros" style={{ padding: '5rem 2rem', background: 'var(--cream)' }}>
+      {/* ABOUT — desktop */}
+      <section id="nosotros" className="about-desktop-section" style={{ padding: '5rem 2rem', background: 'var(--cream)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div className="landing-about-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-            <div className="about-mobile"><MobileSlider /></div>
-            <div className="about-desktop"><AboutCollage /></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
+            <AboutCollage />
             <div>
               <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Nuestra historia</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 2.5vw, 2.4rem)', color: 'var(--green-dark)', marginBottom: '1.25rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
@@ -377,6 +375,25 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT — mobile */}
+      <section id="nosotros" className="about-mobile-section" style={{ background: 'var(--cream)', paddingBottom: '3rem' }}>
+        <MobileSlider />
+        <div style={{ padding: '2rem 1.5rem 0' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.5rem' }}>Nuestra historia</div>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', color: 'var(--green-dark)', marginBottom: '1rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
+          <p style={{ fontSize: '0.92rem', color: 'var(--text-mid)', lineHeight: 1.7, marginBottom: '0.75rem' }}>En Nickelao Barber creemos que un buen corte es mucho más que estética: es confianza, identidad y bienestar.</p>
+          <p style={{ fontSize: '0.92rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>Cada cliente recibe un trato personalizado en un espacio cuidado y relajado.</p>
+          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--cream-mid)' }}>
+            {[{ n: '8+', label: 'Años' }, { n: '2k+', label: 'Clientes' }, { n: '15+', label: 'Servicios' }].map(s => (
+              <div key={s.n}>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', fontWeight: 700, color: 'var(--green-dark)', lineHeight: 1 }}>{s.n}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-light)', marginTop: '0.2rem', fontWeight: 500 }}>{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
