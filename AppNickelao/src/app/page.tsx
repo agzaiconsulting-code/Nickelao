@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { createPortal } from 'react-dom'
+import { useState } from 'react'
 import Image from 'next/image'
+import { PhotoSlider } from '@/components/PhotoSlider'
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -87,98 +87,6 @@ const ABOUT_IMAGES = [
   '/d9c5880943c14fe8bbc7b1f30c4aab-nick-home-barberia-biz-photo-e66e3340cd3e4bad869148a688b5eb-booksy.jpeg',
 ]
 
-function PhotoSlider() {
-  const [idx, setIdx] = useState(0)
-  const [open, setOpen] = useState(false)
-  const tx = useRef<number | null>(null)
-  const n = ABOUT_IMAGES.length
-
-  const prev = useCallback(() => setIdx(i => (i - 1 + n) % n), [n])
-  const next = useCallback(() => setIdx(i => (i + 1) % n), [n])
-
-  useEffect(() => {
-    if (!open) return
-    const h = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-      if (e.key === 'ArrowLeft') prev()
-      if (e.key === 'ArrowRight') next()
-    }
-    window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [open, prev, next])
-
-  const swipeStart = (e: React.TouchEvent) => { tx.current = e.touches[0].clientX }
-  const swipeEnd = (e: React.TouchEvent) => {
-    if (tx.current === null) return
-    const d = tx.current - e.changedTouches[0].clientX
-    if (d > 40) next()
-    else if (d < -40) prev()
-    tx.current = null
-  }
-
-  return (
-    <>
-      <style>{`
-        .ps-wrap { display:flex; flex-direction:column; gap:8px; }
-        .ps-main { position:relative; border-radius:14px; overflow:hidden; background:#c8c9c4; aspect-ratio:4/3; }
-        .ps-img { width:100%; height:100%; object-fit:cover; display:block; }
-        .ps-img { cursor:pointer; }
-        .ps-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:2; width:44px; height:44px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-        .ps-nav-l { left:10px; }
-        .ps-nav-r { right:10px; }
-        .ps-count { position:absolute; bottom:10px; right:12px; z-index:2; background:rgba(0,0,0,0.55); color:#fff; font-size:0.72rem; padding:2px 8px; border-radius:100px; pointer-events:none; }
-        .ps-thumbs { display:grid; gap:6px; }
-        .ps-thumb { aspect-ratio:1; border-radius:8px; overflow:hidden; border:none; padding:0; cursor:pointer; transition:opacity .18s,outline .18s; }
-        .ps-thumb img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
-        .ps-lb { position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.93); display:flex; align-items:center; justify-content:center; }
-        .ps-lb img { max-width:90vw; max-height:85vh; object-fit:contain; border-radius:8px; display:block; pointer-events:none; }
-        .ps-lb-nav { position:absolute; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:none; background:rgba(255,255,255,0.18); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-        .ps-lb-close { position:absolute; top:16px; right:16px; border:none; background:rgba(255,255,255,0.18); color:#fff; cursor:pointer; padding:6px 14px; border-radius:20px; font-size:0.85rem; }
-        .ps-lb-count { position:absolute; bottom:16px; left:0; right:0; text-align:center; color:rgba(255,255,255,0.5); font-size:0.8rem; pointer-events:none; }
-      `}</style>
-
-      <div className="ps-wrap">
-        <div className="ps-main" onTouchStart={swipeStart} onTouchEnd={swipeEnd}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="ps-img" src={ABOUT_IMAGES[idx]} alt={`Foto ${idx + 1}`} onClick={() => setOpen(true)} />
-          <button className="ps-nav ps-nav-l" onClick={prev} aria-label="Anterior">
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <button className="ps-nav ps-nav-r" onClick={next} aria-label="Siguiente">
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-          </button>
-          <span className="ps-count">{idx + 1} / {n}</span>
-        </div>
-
-        <div className="ps-thumbs" style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
-          {ABOUT_IMAGES.map((src, i) => (
-            <button key={src} className="ps-thumb" onClick={() => setIdx(i)}
-              style={{ opacity: i === idx ? 1 : 0.5, outline: i === idx ? '2px solid #547832' : '2px solid transparent', outlineOffset: 2 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={`Miniatura ${i + 1}`} />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {open && typeof document !== 'undefined' && createPortal(
-        <div className="ps-lb" onTouchStart={swipeStart} onTouchEnd={swipeEnd} onClick={() => setOpen(false)}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ABOUT_IMAGES[idx]} alt={`Foto ${idx + 1}`} onClick={e => e.stopPropagation()} />
-          <button className="ps-lb-nav" style={{ left: 12 }} onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior">
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <button className="ps-lb-nav" style={{ right: 12 }} onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente">
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-          </button>
-          <button className="ps-lb-close" onClick={() => setOpen(false)}>Cerrar ✕</button>
-          <span className="ps-lb-count">{idx + 1} / {n}</span>
-        </div>,
-        document.body
-      )}
-    </>
-  )
-}
 
 // ── SERVICES SECTION ─────────────────────────────────────────────────────────
 
@@ -311,7 +219,7 @@ export default function LandingPage() {
       <section id="nosotros" style={{ padding: '5rem 2rem', background: 'var(--cream)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div className="landing-about-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
-            <PhotoSlider />
+            <PhotoSlider photos={ABOUT_IMAGES} />
             <div>
               <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Nuestra historia</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 2.5vw, 2.4rem)', color: 'var(--green-dark)', marginBottom: '1.25rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
