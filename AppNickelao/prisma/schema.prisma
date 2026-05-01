@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CLIENT
+  BARBER
+  ADMIN_SHOP
+  ADMIN_GENERAL
+}
+
+enum Location {
+  FOZ
+  MONDONEDO
+}
+
+enum AppointmentStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ServiceCategory {
+  POPULARES
+  CORTE
+  BARBA
+  COMBINADOS
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String    @unique
+  name          String
+  lastName      String
+  phone         String?
+  email         String    @unique
+  role          Role      @default(CLIENT)
+  avatarUrl     String?
+  isBlocked     Boolean   @default(false)
+  blockedReason String?
+  blockedAt     DateTime?
+  points        Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  appointments    Appointment[]
+  barber          Barber?
+  pointsLog       PointsLog[]
+  reviews         Review[]
+  portfolioImages PortfolioImage[]
+  comments        Comment[]
+}
+
+model Barber {
+  id       String   @id @default(cuid())
+  userId   String   @unique
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location
+  isActive Boolean  @default(true)
+
+  appointments   Appointment[]
+  unavailability UnavailabilityBlock[]
+}
+
+model Service {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  description String
+  duration    Int
+  price       Float
+  category    ServiceCategory
+  isActive    Boolean         @default(true)
+
+  appointments Appointment[]
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  clientId  String
+  client    User              @relation(fields: [clientId], references: [id])
+  barberId  String
+  barber    Barber            @relation(fields: [barberId], references: [id])
+  serviceId String
+  service   Service           @relation(fields: [serviceId], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  status    AppointmentStatus @default(CONFIRMED)
+  notes     String?
+  createdAt DateTime          @default(now())
+
+  review Review?
+}
+
+model UnavailabilityBlock {
+  id        String   @id @default(cuid())
+  barberId  String
+  barber    Barber   @relation(fields: [barberId], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id            String      @id @default(cuid())
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  clientId      String
+  client        User        @relation(fields: [clientId], references: [id])
+  text          String?
+  pointsAwarded Int         @default(5)
+  createdAt     DateTime    @default(now())
+
+  portfolioImages PortfolioImage[]
+}
+
+model PortfolioImage {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    User     @relation(fields: [clientId], references: [id])
+  reviewId  String?
+  review    Review?  @relation(fields: [reviewId], references: [id])
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  comments Comment[]
+}
+
+model Comment {
+  id               String         @id @default(cuid())
+  portfolioImageId String
+  portfolioImage   PortfolioImage @relation(fields: [portfolioImageId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  text             String
+  createdAt        DateTime       @default(now())
+}
+
+model PointsLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+}

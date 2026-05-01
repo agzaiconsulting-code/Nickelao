@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nickelao Barber</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sage: oklch(0.73 0.06 145);
+      --sage-light: oklch(0.88 0.04 145);
+      --sage-dark: oklch(0.62 0.07 145);
+      --green-dark: oklch(0.28 0.10 145);
+      --gold: oklch(0.78 0.14 88);
+      --gold-dark: oklch(0.65 0.14 88);
+      --cream: oklch(0.97 0.015 85);
+      --cream-mid: oklch(0.93 0.02 85);
+      --text-dark: oklch(0.16 0.03 145);
+      --text-mid: oklch(0.38 0.05 145);
+      --text-light: oklch(0.55 0.04 145);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ─────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cream);
+      border-bottom: 1px solid var(--cream-mid);
+      padding: 0 2.5rem;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      flex: 1;
+    }
+
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid var(--sage-dark);
+    }
+
+    .header-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex: 2;
+      justify-content: center;
+    }
+
+    nav a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-decoration: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      transition: background 0.18s, color 0.18s;
+      letter-spacing: 0.01em;
+    }
+
+    nav a:hover {
+      background: var(--sage-light);
+      color: var(--green-dark);
+    }
+
+    .header-actions { flex: 1; display: flex; justify-content: flex-end; gap: 0.6rem; }
+
+    .btn-outline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 1.1rem;
+      border-radius: 6px;
+      border: 1.5px solid var(--green-dark);
+      color: var(--green-dark);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn-outline:hover { background: var(--green-dark); color: var(--cream); }
+
+    .btn-solid {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 1.1rem;
+      border-radius: 6px;
+      border: 1.5px solid var(--green-dark);
+      color: var(--cream);
+      background: var(--green-dark);
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn-solid:hover { background: oklch(0.22 0.09 145); }
+
+    /* ── HERO ───────────────────────────────────────── */
+    .hero {
+      background: var(--green-dark);
+      min-height: 82vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 60px,
+        oklch(0.32 0.10 145 / 0.35) 60px,
+        oklch(0.32 0.10 145 / 0.35) 62px
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: oklch(0.78 0.14 88 / 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 16px;
+      object-fit: cover;
+      margin-bottom: 1.5rem;
+      border: 3px solid var(--gold);
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 span { color: var(--gold); }
+
+    .hero p {
+      color: oklch(0.88 0.03 145);
+      font-size: 1.05rem;
+      font-weight: 300;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn-hero-primary {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--gold);
+      color: var(--green-dark);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .btn-hero-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+
+    .btn-hero-ghost {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      border: 1.5px solid oklch(0.88 0.04 145 / 0.4);
+      background: transparent;
+      color: var(--cream);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-hero-ghost:hover { border-color: var(--cream); background: oklch(1 0 0 / 0.06); }
+
+    /* ── SECTIONS ───────────────────────────────────── */
+    section { padding: 5rem 2rem; }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-sub {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      font-weight: 300;
+      max-width: 500px;
+    }
+
+    .section-header { margin-bottom: 3rem; }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── BOOKING ────────────────────────────────────── */
+    #reservas { background: var(--cream); }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .day-column {
+      background: var(--cream-mid);
+      border: 1px solid oklch(0.88 0.03 145);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .day-header {
+      background: var(--green-dark);
+      color: var(--cream);
+      padding: 1.1rem 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .day-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .day-date {
+      font-size: 0.8rem;
+      color: oklch(0.78 0.14 88);
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    .slots-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      padding: 1.25rem;
+    }
+
+    .slot {
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      border: 1.5px solid oklch(0.83 0.04 145);
+      background: var(--cream);
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
+
+    .slot:hover:not(.slot--taken) {
+      border-color: var(--green-dark);
+      background: oklch(0.28 0.10 145 / 0.06);
+    }
+
+    .slot--selected {
+      border-color: var(--gold-dark);
+      background: oklch(0.78 0.14 88 / 0.12);
+    }
+
+    .slot--taken {
+      opacity: 0.38;
+      cursor: not-allowed;
+      background: oklch(0.88 0.03 145);
+    }
+
+    .slot-time {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .slot-pill {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      background: oklch(0.78 0.14 88 / 0.18);
+      color: var(--gold-dark);
+    }
+
+    .slot--taken .slot-pill {
+      background: oklch(0.75 0.02 145 / 0.25);
+      color: var(--text-light);
+    }
+
+    .booking-panel {
+      background: var(--green-dark);
+      border-radius: 14px;
+      padding: 2rem;
+      color: var(--cream);
+      position: sticky;
+      top: 90px;
+    }
+
+    .booking-panel h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: var(--cream);
+    }
+
+    .booking-field {
+      margin-bottom: 1rem;
+    }
+
+    .booking-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: oklch(0.78 0.14 88);
+      margin-bottom: 0.4rem;
+    }
+
+    .booking-field select,
+    .booking-field input {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      border: 1.5px solid oklch(0.42 0.06 145);
+      background: oklch(0.22 0.08 145);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+
+    .booking-field select:focus,
+    .booking-field input:focus {
+      border-color: var(--gold);
+    }
+
+    .booking-field select option { background: oklch(0.22 0.08 145); }
+
+    .booking-selection {
+      background: oklch(0.22 0.08 145);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    .booking-selection .sel-label { color: oklch(0.78 0.14 88); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+    .booking-selection .sel-value { font-weight: 500; color: var(--cream); }
+
+    .btn-book {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--gold);
+      color: var(--green-dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .btn-book:hover { background: var(--gold-dark); }
+    .btn-book:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── SERVICES ───────────────────────────────────── */
+    #servicios { background: oklch(0.95 0.02 145); }
+
+    .services-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      border: 1.5px solid oklch(0.83 0.04 145);
+      background: transparent;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .tab-btn:hover { border-color: var(--green-dark); color: var(--green-dark); }
+    .tab-btn--active {
+      background: var(--green-dark);
+      border-color: var(--green-dark);
+      color: var(--cream);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .service-card {
+      background: var(--cream);
+      border: 1px solid oklch(0.88 0.03 145);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .service-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px oklch(0.28 0.10 145 / 0.10);
+      border-color: var(--sage-dark);
+    }
+
+    .service-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .service-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      line-height: 1.3;
+    }
+
+    .service-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold-dark);
+      white-space: nowrap;
+    }
+
+    .service-desc {
+      font-size: 0.83rem;
+      color: var(--text-light);
+      line-height: 1.55;
+    }
+
+    .service-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .service-meta svg { flex-shrink: 0; }
+
+    /* ── ABOUT ──────────────────────────────────────── */
+    #nosotros { background: var(--cream); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .about-visual {
+      aspect-ratio: 4/5;
+      background: var(--sage);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 18px,
+        oklch(0.65 0.07 145 / 0.3) 18px,
+        oklch(0.65 0.07 145 / 0.3) 20px
+      );
+    }
+
+    .about-visual img {
+      position: relative;
+      z-index: 1;
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      border: 4px solid var(--cream);
+      object-fit: cover;
+    }
+
+    .about-placeholder-text {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      right: 1.5rem;
+      z-index: 1;
+      font-size: 0.72rem;
+      font-family: monospace;
+      color: oklch(0.42 0.05 145 / 0.6);
+      text-align: center;
+    }
+
+    .about-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+      color: var(--green-dark);
+      margin-bottom: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .about-text p {
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    .about-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--cream-mid);
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      line-height: 1;
+    }
+
+    .stat-number span { color: var(--gold-dark); }
+    .stat-label { font-size: 0.78rem; color: var(--text-light); margin-top: 0.25rem; font-weight: 500; }
+
+    /* ── CONTACT ────────────────────────────────────── */
+    #contacto { background: oklch(0.95 0.02 145); }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .contact-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--green-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--sage-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .contact-item-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 0.2rem; }
+    .contact-item-value { font-size: 0.9rem; color: var(--text-dark); font-weight: 500; }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .form-field label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+    }
+
+    .form-field input,
+    .form-field textarea {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1.5px solid oklch(0.83 0.04 145);
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.18s;
+      resize: none;
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus { border-color: var(--green-dark); }
+
+    .btn-contact {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--green-dark);
+      color: var(--cream);
+      cursor: pointer;
+      transition: all 0.2s;
+      align-self: flex-start;
+    }
+    .btn-contact:hover { background: oklch(0.22 0.09 145); }
+
+    /* ── FOOTER ─────────────────────────────────────── */
+    footer {
+      background: var(--green-dark);
+      color: oklch(0.78 0.04 145);
+      padding: 3rem 2rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid oklch(0.35 0.06 145);
+    }
+
+    .footer-brand { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .footer-logo-row { display: flex; align-items: center; gap: 0.75rem; }
+
+    .footer-logo {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid var(--gold-dark);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--cream);
+    }
+
+    .footer-tagline { font-size: 0.82rem; line-height: 1.6; }
+
+    .footer-social {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .social-link {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1.5px solid oklch(0.38 0.06 145);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: oklch(0.75 0.04 145);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .social-link:hover { border-color: var(--gold-dark); color: var(--gold); }
+
+    .footer-col h4 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .footer-col ul li { font-size: 0.85rem; }
+
+    .footer-col ul li a {
+      color: oklch(0.75 0.04 145);
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+    .footer-col ul li a:hover { color: var(--cream); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: oklch(0.50 0.04 145);
+    }
+
+    /* ── MODAL ──────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: oklch(0.10 0.05 145 / 0.7);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: min(480px, 92vw);
+      box-shadow: 0 24px 64px oklch(0.10 0.05 145 / 0.3);
+    }
+
+    .modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--green-dark);
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-sub { font-size: 0.85rem; color: var(--text-light); margin-bottom: 2rem; }
+
+    .modal-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-radius: 8px; overflow: hidden; border: 1.5px solid oklch(0.83 0.04 145); }
+
+    .modal-tab {
+      flex: 1;
+      padding: 0.65rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .modal-tab--active { background: var(--green-dark); color: var(--cream); }
+
+    .modal .form-field input {
+      background: oklch(0.96 0.015 85);
+    }
+
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+
+    .btn-modal-primary {
+      flex: 1;
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--green-dark);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-modal-primary:hover { background: oklch(0.22 0.09 145); }
+
+    .btn-modal-ghost {
+      padding: 0.85rem 1.5rem;
+      border-radius: 8px;
+      border: 1.5px solid oklch(0.83 0.04 145);
+      background: transparent;
+      color: var(--text-mid);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── SUCCESS TOAST ──────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 300;
+      background: var(--green-dark);
+      color: var(--cream);
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-left: 4px solid var(--gold);
+      box-shadow: 0 8px 32px oklch(0.10 0.05 145 / 0.25);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 0 1rem; }
+      nav { display: none; }
+      .booking-layout { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .hero h1 { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ── DATA ─────────────────────────────────────────
+    const SERVICES = {
+      "Populares": [
+        { nombre: "Corte tendencia o degradado", descripcion: "Cortes de cabello tendencia o degradados hasta nº0.5", duracion_min: 30, precio_eur: 13 },
+        { nombre: "Corte de cabello + diseño de barba", descripcion: "Corte de cabello y diseño de barba. No incluye cortes técnicos o pelo/barba larga", duracion_min: 45, precio_eur: 20 },
+        { nombre: "Corte de cabello o rapado", descripcion: "Cortes de cabello hasta el nº1 o rapados hasta nº6", duracion_min: 25, precio_eur: 12 },
+      ],
+      "Corte": [
+        { nombre: "Corte tendencia o degradado", descripcion: "Cortes de cabello tendencia o degradados hasta nº0.5", duracion_min: 30, precio_eur: 13 },
+        { nombre: "Afeitado de cabeza", descripcion: "Afeitado de cabeza con shaver y su respectivo cuidado", duracion_min: 20, precio_eur: 10 },
+        { nombre: "Lavado de cabeza y peinado", descripcion: "Lavado de cabeza, masaje y peinado", duracion_min: 10, precio_eur: 5 },
+        { nombre: "Corte de cabello o rapado", descripcion: "Cortes de cabello hasta el nº1 o rapados hasta nº6", duracion_min: 25, precio_eur: 12 },
+        { nombre: "Corte jubilado y niños", descripcion: "Corte de cabello para jubilados y niños menores de 8 años", duracion_min: 20, precio_eur: 11 },
+        { nombre: "Corte técnico o pelo largo", descripcion: "Corte de cabello con dificultad técnica o cabello largo. Incluye lavado", duracion_min: 45, precio_eur: 17 },
+        { nombre: "Diseño de cuello y patillas", descripcion: "Arreglo y diseño de cuello y patillas para mantenimiento del corte", duracion_min: 15, precio_eur: 7 },
+      ],
+      "Barba": [
+        { nombre: "Diseño de la barba y/o degradado", descripcion: "Diseño de barba tendencia o degradados con su perfilado", duracion_min: 20, precio_eur: 10 },
+        { nombre: "Afeitado clásico", descripcion: "Afeitado de barba clásico a navaja con masaje y cuidados", duracion_min: 30, precio_eur: 12 },
+        { nombre: "Arreglo de barba", descripcion: "Barba rebajada a máquina y mantenimiento de su perfilado", duracion_min: 15, precio_eur: 8 },
+        { nombre: "Diseño y cuidado de barba larga", descripcion: "Diseño, cuidados y mantenimiento de barba larga", duracion_min: 30, precio_eur: 12 },
+      ],
+      "Combinados": [
+        { nombre: "Corte de cabello + diseño de barba", descripcion: "Corte de cabello y diseño de barba. No incluye cortes técnicos o pelo/barba larga", duracion_min: 45, precio_eur: 20 },
+        { nombre: "Afeitado de cabeza + diseño de barba", descripcion: "Afeitado de cabeza con diseño de barba. No incluye barba larga", duracion_min: 35, precio_eur: 17 },
+        { nombre: "Pack completo", descripcion: "Lavado + corte (no incluye corte técnico o pelo largo) + barba (no incluye barba larga)", duracion_min: 55, precio_eur: 25 },
+        { nombre: "Lavado + corte", descripcion: "Corte de cabello (no incluye corte técnico o pelo largo) más lavado de cabeza", duracion_min: 35, precio_eur: 16 },
+      ],
+    };
+
+    const DAYS_OF_WEEK = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    const MONTHS = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+
+    // ── ICONS ────────────────────────────────────────
+    const IconClock = () => (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    );
+
+    const IconLocation = () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    );
+
+    const IconPhone = () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12a19.79 19.79 0 0 1-3-8.63A2 2 0 0 1 3.44 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 7.13 7.13l1.32-1.32a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    );
+
+    const IconMail = () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+    );
+
+    const IconInstagram = () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="3"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+    );
+
+    // ── MODAL ────────────────────────────────────────
+    function AuthModal({ onClose }) {
+      const [tab, setTab] = useState('login');
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal">
+            <h2>{tab === 'login' ? 'Bienvenido' : 'Crear cuenta'}</h2>
+            <p className="modal-sub">{tab === 'login' ? 'Accede a tu cuenta para gestionar tus reservas.' : 'Regístrate en Nickelao Barber.'}</p>
+            <div className="modal-tabs">
+              <button className={`modal-tab ${tab === 'login' ? 'modal-tab--active' : ''}`} onClick={() => setTab('login')}>Iniciar sesión</button>
+              <button className={`modal-tab ${tab === 'register' ? 'modal-tab--active' : ''}`} onClick={() => setTab('register')}>Registrarse</button>
+            </div>
+            <div className="contact-form">
+              {tab === 'register' && (
+                <div className="form-field">
+                  <label>Nombre</label>
+                  <input type="text" placeholder="Tu nombre completo" />
+                </div>
+              )}
+              <div className="form-field">
+                <label>Email</label>
+                <input type="email" placeholder="tu@email.com" />
+              </div>
+              <div className="form-field">
+                <label>Contraseña</label>
+                <input type="password" placeholder="••••••••" />
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="btn-modal-ghost" onClick={onClose}>Cancelar</button>
+              <button className="btn-modal-primary">{tab === 'login' ? 'Acceder' : 'Crear cuenta'}</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── TIME HELPERS ─────────────────────────────────
+    function timeToMin(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+    function minToTime(m) { return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`; }
+    const OPEN_MIN  = timeToMin('09:00');
+    const CLOSE_MIN = timeToMin('20:00');
+
+    function addDays(base, n) {
+      const d = new Date(base); d.setDate(base.getDate() + n); return d;
+    }
+    const BASE_DATE = new Date(2026, 3, 30);
+
+    // ── BOOKING DATA ─────────────────────────────────
+    // appointments: [{start:'HH:MM', dur:N}]  (dur in minutes)
+    const LOCALS = {
+      Foz: {
+        barbers: ['Nick', 'Diego'],
+        appointments: {
+          Nick: {
+            0: [{start:'09:00',dur:30},{start:'10:30',dur:45},{start:'13:00',dur:20},{start:'15:30',dur:25},{start:'17:00',dur:55}],
+            1: [{start:'09:30',dur:20},{start:'11:00',dur:30},{start:'13:30',dur:45},{start:'16:00',dur:30},{start:'18:30',dur:25}],
+          },
+          Diego: {
+            0: [{start:'09:00',dur:45},{start:'11:30',dur:20},{start:'13:00',dur:30},{start:'15:00',dur:55},{start:'17:30',dur:20}],
+            1: [{start:'10:00',dur:25},{start:'12:00',dur:45},{start:'14:30',dur:20},{start:'16:30',dur:30},{start:'18:00',dur:45}],
+          },
+        },
+      },
+      Mondoñedo: {
+        barbers: ['Roberto', 'Cristina'],
+        appointments: {
+          Roberto: {
+            0: [{start:'09:30',dur:45},{start:'11:30',dur:20},{start:'13:30',dur:30},{start:'15:30',dur:55},{start:'18:00',dur:20}],
+            1: [{start:'09:00',dur:30},{start:'11:00',dur:45},{start:'14:00',dur:25},{start:'16:00',dur:20},{start:'18:30',dur:30}],
+          },
+          Cristina: {
+            0: [{start:'09:00',dur:20},{start:'10:30',dur:30},{start:'12:30',dur:45},{start:'15:00',dur:20},{start:'17:30',dur:30}],
+            1: [{start:'09:30',dur:55},{start:'12:00',dur:20},{start:'14:00',dur:30},{start:'16:30',dur:45},{start:'18:30',dur:20}],
+          },
+        },
+      },
+    };
+
+    function overlaps(aStart, aDur, bStart, bDur) {
+      return aStart < bStart + bDur && aStart + aDur > bStart;
+    }
+
+    function getAllAppointments(local, barber, dayKey, userBooked) {
+      const preset = LOCALS[local].appointments[barber]?.[dayKey] || [];
+      const user = userBooked[`${local}-${barber}-${dayKey}`] || [];
+      return [...preset, ...user];
+    }
+
+    function getAvailableSlotTimes(local, barber, dayKey, durMin, userBooked) {
+      const appts = getAllAppointments(local, barber, dayKey, userBooked);
+      const slots = [];
+      for (let t = OPEN_MIN; t + durMin <= CLOSE_MIN; t += durMin) {
+        const blocked = appts.some(a => overlaps(t, durMin, timeToMin(a.start), a.dur));
+        if (!blocked) slots.push(minToTime(t));
+      }
+      return slots;
+    }
+
+    // ── BOOKING ──────────────────────────────────────
+    function BookingSection() {
+      const [local, setLocal] = useState('Foz');
+      const [barberPref, setBarberPref] = useState('auto');
+      const [startOffset, setStartOffset] = useState(1);
+      const [serviceKey, setServiceKey] = useState('');
+      const [selected, setSelected] = useState(null);
+      const [name, setName] = useState('');
+      const [phone, setPhone] = useState('');
+      const [toast, setToast] = useState(false);
+      // userBooked: { 'local-barber-dayKey': [{start, dur}] }
+      const [userBooked, setUserBooked] = useState({});
+
+      const allServicesFlat = Object.values(SERVICES).flat();
+      const uniqueServices = [...new Map(allServicesFlat.map(s => [s.nombre, s])).values()];
+      const selectedService = uniqueServices.find(s => s.nombre === serviceKey) || null;
+      const durMin = selectedService ? selectedService.duracion_min : 0;
+
+      const days = [addDays(BASE_DATE, startOffset), addDays(BASE_DATE, startOffset + 1)];
+      const localData = LOCALS[local];
+      const barbers = barberPref === 'auto' ? localData.barbers : [barberPref];
+
+      function handleLocalChange(l) { setLocal(l); setBarberPref('auto'); setSelected(null); }
+      function handleBarberChange(b) { setBarberPref(b); setSelected(null); }
+      function handleServiceChange(v) { setServiceKey(v); setSelected(null); }
+
+      function handleSelect(barber, dayIdx, time) {
+        setSelected({ barber, dayIdx, time, date: days[dayIdx], dayKey: startOffset + dayIdx });
+      }
+
+      function handleBook() {
+        if (!selected || !selectedService || !name) return;
+        const key = `${local}-${selected.barber}-${selected.dayKey}`;
+        setUserBooked(prev => ({
+          ...prev,
+          [key]: [...(prev[key] || []), { start: selected.time, dur: durMin }],
+        }));
+        setSelected(null); setName(''); setPhone('');
+        setToast(true); setTimeout(() => setToast(false), 3500);
+      }
+
+      const dotColors = ['var(--gold)', 'var(--sage-light)'];
+
+      // Step indicator
+      const step = !serviceKey ? 1 : !selected ? 2 : 3;
+
+      return (
+        <section id="reservas">
+          <div className="container">
+            <div className="section-header">
+              <div className="section-label">Cita previa</div>
+              <h2 className="section-title">Reserva tu cita</h2>
+              <p className="section-sub">Elige local, peluquero y servicio. Solo verás los horarios disponibles para tu cita.</p>
+            </div>
+
+            {/* STEPS */}
+            <div style={{display:'flex', gap:'0', marginBottom:'2.5rem', alignItems:'center'}}>
+              {[{n:1,label:'Servicio'},{n:2,label:'Horario'},{n:3,label:'Datos'}].map((s,i) => (
+                <React.Fragment key={s.n}>
+                  <div style={{display:'flex', alignItems:'center', gap:'0.5rem'}}>
+                    <div style={{
+                      width:28, height:28, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
+                      background: step >= s.n ? 'var(--green-dark)' : 'oklch(0.88 0.03 145)',
+                      color: step >= s.n ? 'var(--cream)' : 'var(--text-light)',
+                      fontSize:'0.75rem', fontWeight:700, flexShrink:0, transition:'all 0.3s',
+                    }}>{s.n}</div>
+                    <span style={{fontSize:'0.8rem', fontWeight: step === s.n ? 600 : 400, color: step >= s.n ? 'var(--green-dark)' : 'var(--text-light)', transition:'all 0.3s'}}>{s.label}</span>
+                  </div>
+                  {i < 2 && <div style={{flex:1, height:1, background:'oklch(0.85 0.03 145)', margin:'0 0.75rem'}}></div>}
+                </React.Fragment>
+              ))}
+            </div>
+
+            {/* FILTERS ROW */}
+            <div style={{display:'flex', gap:'1.5rem', alignItems:'flex-end', marginBottom:'2rem', flexWrap:'wrap', padding:'1.5rem', background:'oklch(0.96 0.02 145)', borderRadius:'12px', border:'1px solid oklch(0.89 0.03 145)'}}>
+
+              {/* Local */}
+              <div>
+                <div style={{fontSize:'0.7rem', fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold-dark)', marginBottom:'0.5rem'}}>Local</div>
+                <div style={{display:'flex', gap:'0.4rem'}}>
+                  {Object.keys(LOCALS).map(l => (
+                    <button key={l} onClick={() => handleLocalChange(l)} style={{
+                      padding:'0.5rem 1.1rem', borderRadius:'8px', border:'1.5px solid',
+                      borderColor: local === l ? 'var(--green-dark)' : 'oklch(0.83 0.04 145)',
+                      background: local === l ? 'var(--green-dark)' : 'var(--cream)',
+                      color: local === l ? 'var(--cream)' : 'var(--text-mid)',
+                      fontFamily:'DM Sans, sans-serif', fontSize:'0.85rem', fontWeight:600, cursor:'pointer', transition:'all 0.18s',
+                    }}>{l}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Peluquero */}
+              <div>
+                <div style={{fontSize:'0.7rem', fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold-dark)', marginBottom:'0.5rem'}}>Peluquero</div>
+                <div style={{display:'flex', gap:'0.4rem', flexWrap:'wrap'}}>
+                  {['auto', ...localData.barbers].map(b => (
+                    <button key={b} onClick={() => handleBarberChange(b)} style={{
+                      padding:'0.5rem 1rem', borderRadius:'8px', border:'1.5px solid',
+                      borderColor: barberPref === b ? 'var(--green-dark)' : 'oklch(0.83 0.04 145)',
+                      background: barberPref === b ? 'var(--green-dark)' : 'var(--cream)',
+                      color: barberPref === b ? 'var(--cream)' : 'var(--text-mid)',
+                      fontFamily:'DM Sans, sans-serif', fontSize:'0.82rem', fontWeight:600, cursor:'pointer', transition:'all 0.18s',
+                    }}>{b === 'auto' ? 'Autoasignación' : b}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Servicio */}
+              <div style={{flex:1, minWidth:'220px'}}>
+                <div style={{fontSize:'0.7rem', fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold-dark)', marginBottom:'0.5rem'}}>
+                  Servicio <span style={{color:'var(--gold)', fontWeight:700}}>*</span>
+                </div>
+                <select value={serviceKey} onChange={e => handleServiceChange(e.target.value)}
+                  style={{width:'100%', padding:'0.55rem 0.9rem', borderRadius:'8px', border:`1.5px solid ${serviceKey ? 'var(--green-dark)' : 'oklch(0.83 0.04 145)'}`, background:'var(--cream)', fontFamily:'DM Sans, sans-serif', fontSize:'0.85rem', color: serviceKey ? 'var(--text-dark)' : 'var(--text-light)', outline:'none', cursor:'pointer', appearance:'none', WebkitAppearance:'none'}}>
+                  <option value="">— Elige un servicio para ver horarios —</option>
+                  {Object.entries(SERVICES).map(([cat, svcs]) => (
+                    <optgroup key={cat} label={cat}>
+                      {[...new Map(svcs.map(s=>[s.nombre,s])).values()].map(s => (
+                        <option key={s.nombre} value={s.nombre}>{s.nombre} · {s.duracion_min} min · {s.precio_eur}€</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+                {selectedService && (
+                  <div style={{fontSize:'0.72rem', color:'var(--text-light)', marginTop:'0.35rem'}}>
+                    Duración: <strong style={{color:'var(--green-dark)'}}>{selectedService.duracion_min} min</strong> · Precio: <strong style={{color:'var(--green-dark)'}}>{selectedService.precio_eur}€</strong>
+                  </div>
+                )}
+              </div>
+
+              {/* Day navigator */}
+              <div>
+                <div style={{fontSize:'0.7rem', fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--gold-dark)', marginBottom:'0.5rem'}}>Semana</div>
+                <div style={{display:'flex', alignItems:'center', gap:'0.4rem'}}>
+                  <button onClick={() => { setStartOffset(o => Math.max(1, o-2)); setSelected(null); }} disabled={startOffset <= 1}
+                    style={{width:34, height:34, borderRadius:'8px', border:'1.5px solid oklch(0.83 0.04 145)', background:'var(--cream)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-mid)', opacity:startOffset<=1?0.3:1}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <div style={{fontSize:'0.82rem', fontWeight:500, color:'var(--text-dark)', textAlign:'center', minWidth:'160px'}}>
+                    {days[0].getDate()} {MONTHS[days[0].getMonth()]} — {days[1].getDate()} {MONTHS[days[1].getMonth()]}
+                  </div>
+                  <button onClick={() => { setStartOffset(o => o+2); setSelected(null); }}
+                    style={{width:34, height:34, borderRadius:'8px', border:'1.5px solid oklch(0.83 0.04 145)', background:'var(--cream)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-mid)'}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* CALENDAR + PANEL */}
+            <div style={{display:'grid', gridTemplateColumns:`1fr 290px`, gap:'1.5rem', alignItems:'start'}}>
+
+              {/* Calendar columns */}
+              <div>
+                {!serviceKey ? (
+                  <div style={{background:'oklch(0.96 0.02 145)', border:'1px dashed oklch(0.82 0.04 145)', borderRadius:'12px', padding:'3rem 2rem', textAlign:'center'}}>
+                    <div style={{fontSize:'2rem', marginBottom:'0.75rem'}}>✂️</div>
+                    <div style={{fontFamily:'Playfair Display, serif', fontSize:'1.1rem', color:'var(--green-dark)', marginBottom:'0.4rem'}}>Elige un servicio primero</div>
+                    <div style={{fontSize:'0.85rem', color:'var(--text-light)'}}>Los horarios disponibles aparecerán aquí según la duración del servicio que elijas.</div>
+                  </div>
+                ) : (
+                  <div style={{display:'grid', gridTemplateColumns:`repeat(${barbers.length * 2}, 1fr)`, gap:'0.75rem'}}>
+                    {days.map((day, di) =>
+                      barbers.map((barber, bi) => {
+                        const dayKey = startOffset + di;
+                        const availSlots = getAvailableSlotTimes(local, barber, dayKey, durMin, userBooked);
+                        return (
+                          <div className="day-column" key={`${barber}-${di}`}>
+                            <div className="day-header" style={{flexDirection:'column', gap:'0.2rem', padding:'0.85rem 1.1rem'}}>
+                              <div style={{display:'flex', alignItems:'center', gap:'0.5rem'}}>
+                                <div style={{width:7, height:7, borderRadius:'50%', background:dotColors[bi % 2], flexShrink:0}}></div>
+                                <span className="day-name" style={{fontSize:'0.9rem'}}>{barber}</span>
+                              </div>
+                              <span className="day-date">{DAYS_OF_WEEK[day.getDay()]} {day.getDate()} {MONTHS[day.getMonth()]}</span>
+                            </div>
+                            <div style={{padding:'0.85rem', display:'flex', flexDirection:'column', gap:'0.45rem'}}>
+                              {availSlots.length === 0 ? (
+                                <div style={{padding:'1.5rem 0.5rem', textAlign:'center', color:'var(--text-light)', fontSize:'0.78rem', lineHeight:1.5}}>
+                                  Sin huecos disponibles<br/>para este servicio
+                                </div>
+                              ) : availSlots.map(time => {
+                                const isSel = selected && selected.barber === barber && selected.dayIdx === di && selected.time === time;
+                                return (
+                                  <div key={time}
+                                    className={`slot${isSel ? ' slot--selected' : ''}`}
+                                    onClick={() => handleSelect(barber, di, time)}
+                                    style={{cursor:'pointer'}}
+                                  >
+                                    <span className="slot-time">{time}</span>
+                                    <span className="slot-pill" style={{background: isSel ? 'var(--gold-dark)' : 'oklch(0.28 0.10 145 / 0.08)', color: isSel ? 'var(--cream)' : 'var(--green-dark)'}}>
+                                      {isSel ? 'Elegido' : `${selectedService.duracion_min}′`}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* BOOKING PANEL */}
+              <div className="booking-panel" style={{position:'sticky', top:88}}>
+                <h3>Tu reserva</h3>
+
+                <div style={{fontSize:'0.75rem', color:'oklch(0.72 0.06 145)', marginBottom:'1rem', display:'flex', gap:'0.4rem', flexWrap:'wrap'}}>
+                  <span style={{background:'oklch(0.22 0.08 145)', padding:'0.22rem 0.6rem', borderRadius:'6px'}}>📍 {local}</span>
+                  <span style={{background:'oklch(0.22 0.08 145)', padding:'0.22rem 0.6rem', borderRadius:'6px'}}>✂️ {barberPref === 'auto' ? 'Autoasig.' : barberPref}</span>
+                </div>
+
+                {selectedService && (
+                  <div style={{background:'oklch(0.22 0.08 145)', borderRadius:'8px', padding:'0.75rem 1rem', marginBottom:'1rem', fontSize:'0.82rem'}}>
+                    <div style={{color:'oklch(0.78 0.14 88)', fontSize:'0.68rem', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.3rem'}}>Servicio</div>
+                    <div style={{color:'var(--cream)', fontWeight:500, lineHeight:1.4}}>{selectedService.nombre}</div>
+                    <div style={{color:'oklch(0.68 0.05 145)', fontSize:'0.78rem', marginTop:'0.25rem'}}>{selectedService.duracion_min} min · {selectedService.precio_eur}€</div>
+                  </div>
+                )}
+
+                {selected ? (
+                  <div className="booking-selection" style={{marginBottom:'1rem'}}>
+                    <div className="sel-label">Cita seleccionada</div>
+                    <div className="sel-value">{DAYS_OF_WEEK[selected.date.getDay()]}, {selected.date.getDate()} {MONTHS[selected.date.getMonth()]}</div>
+                    <div className="sel-value" style={{marginTop:'0.2rem'}}>{selected.time} · {selected.barber}</div>
+                  </div>
+                ) : (
+                  <div style={{fontSize:'0.8rem', color:'oklch(0.60 0.04 145)', marginBottom:'1rem', padding:'0.9rem', background:'oklch(0.22 0.08 145)', borderRadius:'8px', lineHeight:1.5}}>
+                    {!serviceKey ? 'Elige un servicio para ver los horarios disponibles' : 'Selecciona un horario del calendario'}
+                  </div>
+                )}
+
+                <div className="booking-field">
+                  <label>Nombre</label>
+                  <input type="text" placeholder="Nombre y apellido" value={name} onChange={e => setName(e.target.value)} />
+                </div>
+                <div className="booking-field">
+                  <label>Teléfono</label>
+                  <input type="tel" placeholder="+34 600 000 000" value={phone} onChange={e => setPhone(e.target.value)} />
+                </div>
+
+                <button className="btn-book" onClick={handleBook} disabled={!selected || !selectedService || !name}>
+                  Confirmar reserva
+                </button>
+                <p style={{fontSize:'0.7rem', color:'oklch(0.56 0.04 145)', marginTop:'0.75rem', textAlign:'center'}}>Confirmación por WhatsApp</p>
+              </div>
+            </div>
+          </div>
+
+          {toast && <div className="toast">✓ Reserva confirmada en {local} — ¡Hasta pronto!</div>}
+        </section>
+      );
+    }
+
+    // ── SERVICES ─────────────────────────────────────
+    function ServicesSection() {
+      const [activeTab, setActiveTab] = useState('Populares');
+      const tabs = Object.keys(SERVICES);
+      return (
+        <section id="servicios">
+          <div className="container">
+            <div className="section-header">
+              <div className="section-label">Tarifas</div>
+              <h2 className="section-title">Nuestros servicios</h2>
+              <p className="section-sub">Todos los precios incluyen IVA. Consulta disponibilidad antes de reservar.</p>
+            </div>
+            <div className="services-tabs">
+              {tabs.map(tab => (
+                <button
+                  key={tab}
+                  className={`tab-btn${activeTab === tab ? ' tab-btn--active' : ''}`}
+                  onClick={() => setActiveTab(tab)}
+                >{tab}</button>
+              ))}
+            </div>
+            <div className="services-grid">
+              {SERVICES[activeTab].map((s, i) => (
+                <div className="service-card" key={i}>
+                  <div className="service-card-top">
+                    <div className="service-name">{s.nombre}</div>
+                    <div className="service-price">{s.precio_eur}€</div>
+                  </div>
+                  <div className="service-desc">{s.descripcion}</div>
+                  <div className="service-meta">
+                    <IconClock />
+                    <span>{s.duracion_min} min</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ── APP ───────────────────────────────────────────
+    function App() {
+      const [authOpen, setAuthOpen] = useState(false);
+      const [contactForm, setContactForm] = useState({name:'', email:'', msg:''});
+      const [contactSent, setContactSent] = useState(false);
+
+      function handleContact(e) {
+        e.preventDefault();
+        setContactSent(true);
+        setTimeout(() => setContactSent(false), 3000);
+        setContactForm({name:'', email:'', msg:''});
+      }
+
+      return (
+        <>
+          {/* HEADER */}
+          <header>
+            <a href="#" className="header-brand">
+              <img src="uploads/logoDefinitivo.jpeg" alt="Nickelao Barber" className="header-logo" />
+              <span className="header-name">Nickelao Barber</span>
+            </a>
+            <nav>
+              <a href="#reservas">Reserva</a>
+              <a href="#servicios">Servicios</a>
+              <a href="#nosotros">Quiénes somos</a>
+              <a href="#contacto">Contacto</a>
+            </nav>
+            <div className="header-actions">
+              <button className="btn-outline" onClick={() => setAuthOpen(true)}>Iniciar sesión</button>
+              <button className="btn-solid" onClick={() => setAuthOpen(true)}>Registrarse</button>
+            </div>
+          </header>
+
+          {/* HERO */}
+          <div className="hero">
+            <div className="hero-content">
+              <div className="hero-badge">
+                <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+                Citas disponibles hoy
+              </div>
+              <img src="uploads/logoDefinitivo.jpeg" alt="Logo" className="hero-logo" />
+              <h1>Tu mejor <span>versión</span><br/>empieza aquí</h1>
+              <p>Barbería de confianza en el corazón de la ciudad.<br/>Cortes de precisión, afeitados clásicos y mucho más.</p>
+              <div className="hero-ctas">
+                <button className="btn-hero-primary" onClick={() => document.getElementById('reservas').scrollIntoView({behavior:'smooth', block:'start'})}>Reservar cita</button>
+                <button className="btn-hero-ghost" onClick={() => document.getElementById('servicios').scrollIntoView({behavior:'smooth', block:'start'})}>Ver servicios</button>
+              </div>
+            </div>
+          </div>
+
+          {/* BOOKING */}
+          <BookingSection />
+
+          {/* SERVICES */}
+          <ServicesSection />
+
+          {/* ABOUT */}
+          <section id="nosotros">
+            <div className="container">
+              <div className="about-grid">
+                <div className="about-visual">
+                  <img src="uploads/logoDefinitivo.jpeg" alt="Nickelao Barber" />
+                  <div className="about-placeholder-text">[ foto del local / equipo ]</div>
+                </div>
+                <div className="about-text">
+                  <div className="section-label">Nuestra historia</div>
+                  <h2>Tradición y estilo<br/>en cada corte</h2>
+                  <p>En Nickelao Barber creemos que un buen corte es mucho más que estética: es confianza, identidad y bienestar. Nuestro equipo combina técnicas clásicas de barbería con las últimas tendencias para ofrecerte siempre el mejor resultado.</p>
+                  <p>Cada cliente recibe un trato personalizado en un espacio cuidado, relajado y pensado para que disfrutes de la experiencia de principio a fin.</p>
+                  <div className="about-stats">
+                    <div>
+                      <div className="stat-number">8<span>+</span></div>
+                      <div className="stat-label">Años de experiencia</div>
+                    </div>
+                    <div>
+                      <div className="stat-number">2k<span>+</span></div>
+                      <div className="stat-label">Clientes satisfechos</div>
+                    </div>
+                    <div>
+                      <div className="stat-number">15<span>+</span></div>
+                      <div className="stat-label">Servicios disponibles</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* CONTACT */}
+          <section id="contacto">
+            <div className="container">
+              <div className="section-header">
+                <div className="section-label">Habla con nosotros</div>
+                <h2 className="section-title">Contacto</h2>
+              </div>
+              <div className="contact-grid">
+                <div className="contact-info">
+                  <h3>Encuéntranos</h3>
+                  <div className="contact-item">
+                    <div className="contact-icon"><IconLocation /></div>
+                    <div>
+                      <div className="contact-item-label">Dirección</div>
+                      <div className="contact-item-value">Calle Mayor 12, Local 3<br/>28001 Madrid</div>
+                    </div>
+                  </div>
+                  <div className="contact-item">
+                    <div className="contact-icon"><IconPhone /></div>
+                    <div>
+                      <div className="contact-item-label">Teléfono</div>
+                      <div className="contact-item-value">+34 600 000 000</div>
+                    </div>
+                  </div>
+                  <div className="contact-item">
+                    <div className="contact-icon"><IconMail /></div>
+                    <div>
+                      <div className="contact-item-label">Email</div>
+                      <div className="contact-item-value">hola@nickelaobarber.com</div>
+                    </div>
+                  </div>
+                  <div style={{marginTop:'1.5rem'}}>
+                    <div className="contact-item-label" style={{marginBottom:'0.6rem'}}>Horario</div>
+                    <div style={{fontSize:'0.88rem', color:'var(--text-mid)', lineHeight:1.8}}>
+                      Lun – Vie: 09:00 – 20:00<br/>
+                      Sábados: 09:00 – 15:00<br/>
+                      Domingos: Cerrado
+                    </div>
+                  </div>
+                </div>
+                <form className="contact-form" onSubmit={handleContact}>
+                  <div className="form-field">
+                    <label>Nombre</label>
+                    <input type="text" placeholder="Tu nombre" value={contactForm.name} onChange={e => setContactForm(f => ({...f, name:e.target.value}))} />
+                  </div>
+                  <div className="form-field">
+                    <label>Email</label>
+                    <input type="email" placeholder="tu@email.com" value={contactForm.email} onChange={e => setContactForm(f => ({...f, email:e.target.value}))} />
+                  </div>
+                  <div className="form-field">
+                    <label>Mensaje</label>
+                    <textarea rows="5" placeholder="¿En qué podemos ayudarte?" value={contactForm.msg} onChange={e => setContactForm(f => ({...f, msg:e.target.value}))}></textarea>
+                  </div>
+                  <button type="submit" className="btn-contact">
+                    {contactSent ? '✓ Mensaje enviado' : 'Enviar mensaje'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          {/* FOOTER */}
+          <footer>
+            <div className="footer-inner">
+              <div className="footer-brand">
+                <div className="footer-logo-row">
+                  <img src="uploads/logoDefinitivo.jpeg" alt="Logo" className="footer-logo" />
+                  <span className="footer-name">Nickelao Barber</span>
+                </div>
+                <p className="footer-tagline">Barbería profesional donde la tradición<br/>y el estilo se encuentran.</p>
+                <div className="footer-social">
+                  <a href="#" className="social-link" aria-label="Instagram">
+                    <IconInstagram />
+                  </a>
+                </div>
+              </div>
+              <div className="footer-col">
+                <h4>Navegación</h4>
+                <ul>
+                  <li><a href="#reservas">Reservar cita</a></li>
+                  <li><a href="#servicios">Servicios</a></li>
+                  <li><a href="#nosotros">Quiénes somos</a></li>
+                  <li><a href="#contacto">Contacto</a></li>
+                </ul>
+              </div>
+              <div className="footer-col">
+                <h4>Contacto</h4>
+                <ul>
+                  <li><a href="#">Calle Mayor 12, Local 3</a></li>
+                  <li><a href="tel:+34600000000">+34 600 000 000</a></li>
+                  <li><a href="mailto:hola@nickelaobarber.com">hola@nickelaobarber.com</a></li>
+                  <li><a href="#">@nickelaobarber</a></li>
+                </ul>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              <span>© 2026 Nickelao Barber. Todos los derechos reservados.</span>
+              <span>Hecho con cuidado en Madrid</span>
+            </div>
+          </footer>
+
+          {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

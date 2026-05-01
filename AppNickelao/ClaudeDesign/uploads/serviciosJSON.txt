@@ -1,0 +1,118 @@
+{
+  "servicios_populares": [
+    {
+      "nombre": "Corte tendencia o degradado",
+      "descripcion": "Cortes de cabello tendencia o degradados hasta nº0.5",
+      "duracion_min": 30,
+      "precio_eur": 13.0
+    },
+    {
+      "nombre": "Corte de cabello + diseño de barba",
+      "descripcion": "Corte de cabello y diseño de barba. No incluye cortes técnicos o pelo/barba larga",
+      "duracion_min": 45,
+      "precio_eur": 20.0
+    },
+    {
+      "nombre": "Corte de cabello o rapado",
+      "descripcion": "Cortes de cabello hasta el nº1 o rapados hasta nº6",
+      "duracion_min": 25,
+      "precio_eur": 12.0
+    }
+  ],
+  "servicios_de_corte": [
+    {
+      "nombre": "Corte tendencia o degradado",
+      "descripcion": "Cortes de cabello tendencia o degradados hasta nº0.5",
+      "duracion_min": 30,
+      "precio_eur": 13.0
+    },
+    {
+      "nombre": "Afeitado de cabeza",
+      "descripcion": "Afeitado de cabeza con shaver y su respectivo cuidado",
+      "duracion_min": 20,
+      "precio_eur": 10.0
+    },
+    {
+      "nombre": "Lavado de cabeza y peinado",
+      "descripcion": "Lavado de cabeza, masaje y peinado",
+      "duracion_min": 10,
+      "precio_eur": 5.0
+    },
+    {
+      "nombre": "Corte de cabello o rapado",
+      "descripcion": "Cortes de cabello hasta el nº1 o rapados hasta nº6",
+      "duracion_min": 25,
+      "precio_eur": 12.0
+    },
+    {
+      "nombre": "Corte jubilado y niños",
+      "descripcion": "Corte de cabello para jubilados y niños menores de 8 años",
+      "duracion_min": 20,
+      "precio_eur": 11.0
+    },
+    {
+      "nombre": "Corte técnico o pelo largo",
+      "descripcion": "Corte de cabello con dificultad técnica o cabello largo. Incluye lavado",
+      "duracion_min": 45,
+      "precio_eur": 17.0
+    },
+    {
+      "nombre": "Diseño de cuello y patillas",
+      "descripcion": "Arreglo y diseño de cuello y patillas para mantenimiento del corte",
+      "duracion_min": 15,
+      "precio_eur": 7.0
+    }
+  ],
+  "servicios_de_barba": [
+    {
+      "nombre": "Diseño de la barba y/o degradado",
+      "descripcion": "Diseño de barba tendencia o degradados con su perfilado",
+      "duracion_min": 20,
+      "precio_eur": 10.0
+    },
+    {
+      "nombre": "Afeitado clásico",
+      "descripcion": "Afeitado de barba clásico a navaja con masaje y cuidados",
+      "duracion_min": 30,
+      "precio_eur": 12.0
+    },
+    {
+      "nombre": "Arreglo de barba",
+      "descripcion": "Barba rebajada a máquina y mantenimiento de su perfilado",
+      "duracion_min": 15,
+      "precio_eur": 8.0
+    },
+    {
+      "nombre": "Diseño y cuidado de barba larga",
+      "descripcion": "Diseño, cuidados y mantenimiento de barba larga",
+      "duracion_min": 30,
+      "precio_eur": 12.0
+    }
+  ],
+  "servicios_combinados": [
+    {
+      "nombre": "Corte de cabello + diseño de barba",
+      "descripcion": "Corte de cabello y diseño de barba. No incluye cortes técnicos o pelo/barba larga",
+      "duracion_min": 45,
+      "precio_eur": 20.0
+    },
+    {
+      "nombre": "Afeitado de cabeza + diseño de barba",
+      "descripcion": "Afeitado de cabeza con diseño de barba. No incluye barba larga",
+      "duracion_min": 35,
+      "precio_eur": 17.0
+    },
+    {
+      "nombre": "Pack completo",
+      "descripcion": "Lavado + corte (no incluye corte técnico o pelo largo) + barba (no incluye barba larga)",
+      "duracion_min": 55,
+      "precio_eur": 25.0
+    },
+    {
+      "nombre": "Lavado + corte",
+      "descripcion": "Corte de cabello (no incluye corte técnico o pelo largo) más lavado de cabeza",
+      "duracion_min": 35,
+      "precio_eur": 16.0
+    }
+  ]
+}

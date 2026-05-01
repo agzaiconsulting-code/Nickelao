@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(gh repo *)",
+      "Bash(curl *)",
+      "Bash(uipro init *)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Adrian\\\\.claude\\\\Claude Code Projects\\\\AppNickelao\\\\public\")",
+      "Bash(cp \"C:\\\\Users\\\\Adrian\\\\.claude\\\\Claude Code Projects\\\\AppNickelao\\\\logoDefinitivo.jpeg\" \"C:\\\\Users\\\\Adrian\\\\.claude\\\\Claude Code Projects\\\\AppNickelao\\\\public\\\\logo.jpeg\")",
+      "Bash(ping -n 1 registry.npmjs.org)",
+      "Bash(tsx prisma/seed.ts)",
+      "Bash(cat next.config.ts)",
+      "Bash(cat next.config.js)",
+      "Bash(taskkill *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(git -C \"/c/Users/Adrian/.claude/Claude Code Projects/AppNickelao\" remote -v)",
+      "Bash(git -C \"/c/Users/Adrian/.claude/Claude Code Projects/AppNickelao\" status)"
+    ]
+  }
+}
