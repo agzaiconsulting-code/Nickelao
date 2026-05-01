@@ -110,10 +110,12 @@ function AboutSlider() {
     <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
       style={{ aspectRatio: '4/5', borderRadius: 16, overflow: 'hidden', position: 'relative', background: 'var(--sage)' }}>
       {ABOUT_IMAGES.map((src, i) => (
-        <Image key={src} src={src} alt={`Nickelao Barber ${i + 1}`} fill
-          style={{ objectFit: 'cover', opacity: i === current ? 1 : 0, transition: 'opacity 0.7s ease', position: 'absolute', inset: 0 }}
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+        <div key={src} style={{ position: 'absolute', inset: 0, opacity: i === current ? 1 : 0, transition: 'opacity 0.7s ease', pointerEvents: 'none' }}>
+          <Image src={src} alt={`Nickelao Barber ${i + 1}`} fill
+            style={{ objectFit: 'cover' }}
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
       ))}
 
       {/* Controls */}
