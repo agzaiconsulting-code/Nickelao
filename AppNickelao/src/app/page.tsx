@@ -129,10 +129,10 @@ function AboutCollage() {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gridTemplateRows: '200px 200px', gap: 6, borderRadius: 16, overflow: 'hidden' }}>
         {ABOUT_IMAGES.map((src, i) => (
           <button key={src} onClick={() => openLightbox(i)}
-            style={{ ...layout[i], position: 'relative', overflow: 'hidden', cursor: 'zoom-in', background: '#c8c9c4', border: 'none', padding: 0, display: 'block' }}>
-            <Image src={src} alt={`Nickelao Barber ${i + 1}`} fill
-              style={{ objectFit: 'cover' }}
-              sizes="(max-width: 768px) 50vw, 25vw"
+            style={{ ...layout[i], overflow: 'hidden', cursor: 'zoom-in', background: '#c8c9c4', border: 'none', padding: 0, display: 'block' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={`Nickelao Barber ${i + 1}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
             />
           </button>
         ))}
