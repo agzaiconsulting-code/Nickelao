@@ -215,10 +215,6 @@ export default function LandingPage() {
             </a>
           ))}
         </nav>
-        <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer"
-          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.45rem 1.1rem', borderRadius: 6, border: '1.5px solid var(--green-dark)', color: 'var(--cream)', background: 'var(--green-dark)', cursor: 'pointer', transition: 'all 0.18s', whiteSpace: 'nowrap', textDecoration: 'none' }}>
-          Reservar cita
-        </a>
       </header>
 
       {/* HERO */}
