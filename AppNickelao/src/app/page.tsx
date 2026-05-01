@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
@@ -138,44 +139,43 @@ function AboutCollage() {
         ))}
       </div>
 
-      {/* Lightbox */}
-      {lightbox !== null && (
+      {/* Lightbox — rendered in document.body via portal to avoid stacking context issues */}
+      {lightbox !== null && typeof document !== 'undefined' && createPortal(
         <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-          onClick={closeLightbox}
-          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,16,14,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)' }}>
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(10,16,14,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 
           {/* Image */}
-          <div onClick={e => e.stopPropagation()}
-            style={{ position: 'relative', width: 'min(90vw, 700px)', height: 'min(85vh, 700px)' }}>
-            <Image src={ABOUT_IMAGES[lightbox]} alt={`Nickelao Barber ${lightbox + 1}`} fill
-              style={{ objectFit: 'contain', borderRadius: 12 }}
-              sizes="90vw"
-            />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ABOUT_IMAGES[lightbox]} alt={`Nickelao Barber ${lightbox + 1}`}
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 10, display: 'block' }}
+          />
 
           {/* Close */}
           <button onClick={closeLightbox} aria-label="Cerrar"
-            style={{ position: 'fixed', top: 16, right: 16, width: 42, height: 42, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', fontSize: '1.2rem' }}>
+            style={{ position: 'absolute', top: 16, right: 16, width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', lineHeight: 1 }}>
             ✕
           </button>
 
           {/* Prev */}
-          <button onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior"
-            style={{ position: 'fixed', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+          <button onClick={prev} aria-label="Anterior"
+            style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
 
           {/* Next */}
-          <button onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente"
-            style={{ position: 'fixed', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+          <button onClick={next} aria-label="Siguiente"
+            style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
 
-          {/* Counter */}
-          <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontFamily: "'DM Sans', sans-serif" }}>
-            {lightbox + 1} / {ABOUT_IMAGES.length}
+          {/* Counter + tap-to-close hint */}
+          <div onClick={closeLightbox}
+            style={{ position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: '0.82rem', fontFamily: "'DM Sans', sans-serif" }}>
+            {lightbox + 1} / {ABOUT_IMAGES.length} · Toca aquí para cerrar
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
