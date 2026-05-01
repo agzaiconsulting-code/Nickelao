@@ -128,24 +128,13 @@ function AboutCollage() {
       {/* Collage grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gridTemplateRows: '200px 200px', gap: 6, borderRadius: 16, overflow: 'hidden' }}>
         {ABOUT_IMAGES.map((src, i) => (
-          <div key={src} onClick={() => openLightbox(i)}
-            style={{ ...layout[i], position: 'relative', overflow: 'hidden', cursor: 'zoom-in', background: '#c8c9c4' }}>
+          <button key={src} onClick={() => openLightbox(i)}
+            style={{ ...layout[i], position: 'relative', overflow: 'hidden', cursor: 'zoom-in', background: '#c8c9c4', border: 'none', padding: 0, display: 'block' }}>
             <Image src={src} alt={`Nickelao Barber ${i + 1}`} fill
-              style={{ objectFit: 'cover', transition: 'transform 0.3s ease' }}
+              style={{ objectFit: 'cover' }}
               sizes="(max-width: 768px) 50vw, 25vw"
-              onMouseEnter={e => { (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.05)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)' }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(16,26,22,0)', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(16,26,22,0.18)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(16,26,22,0)' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" style={{ opacity: 0, transition: 'opacity 0.2s' }}
-                onMouseEnter={e => { (e.currentTarget as SVGElement).style.opacity = '1' }}>
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
-              </svg>
-            </div>
-          </div>
+          </button>
         ))}
       </div>
 
