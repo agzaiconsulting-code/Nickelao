@@ -126,21 +126,24 @@ function PhotoSlider() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {/* Main image */}
       <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-        style={{ position: 'relative', aspectRatio: '4/3', borderRadius: 14, overflow: 'hidden', background: '#c8c9c4', cursor: 'zoom-in' }}
-        onClick={() => setLightbox(true)}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img key={current} src={ABOUT_IMAGES[current]} alt={`Nickelao Barber ${current + 1}`}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'opacity 0.25s' }}
-        />
-        <button onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior"
+        style={{ position: 'relative', aspectRatio: '4/3', borderRadius: 14, overflow: 'hidden', background: '#c8c9c4' }}>
+        {/* Image as button — native button fires on iOS Safari */}
+        <button onClick={() => setLightbox(true)}
+          style={{ display: 'block', width: '100%', height: '100%', border: 'none', padding: 0, cursor: 'zoom-in', background: 'none' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img key={current} src={ABOUT_IMAGES[current]} alt={`Nickelao Barber ${current + 1}`}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
+          />
+        </button>
+        <button onClick={prev} aria-label="Anterior"
           style={{ ...btnStyle, left: 10 }}>
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <button onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente"
+        <button onClick={next} aria-label="Siguiente"
           style={{ ...btnStyle, right: 10 }}>
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
         </button>
-        <div style={{ position: 'absolute', bottom: 10, right: 12, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '0.72rem', padding: '2px 8px', borderRadius: 100, zIndex: 2 }}>
+        <div style={{ position: 'absolute', bottom: 10, right: 12, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '0.72rem', padding: '2px 8px', borderRadius: 100, zIndex: 2, pointerEvents: 'none' }}>
           {current + 1} / {ABOUT_IMAGES.length}
         </div>
       </div>
