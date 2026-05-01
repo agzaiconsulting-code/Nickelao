@@ -122,7 +122,7 @@ function PhotoSlider() {
         .ps-wrap { display:flex; flex-direction:column; gap:8px; }
         .ps-main { position:relative; border-radius:14px; overflow:hidden; background:#c8c9c4; aspect-ratio:4/3; }
         .ps-img { width:100%; height:100%; object-fit:cover; display:block; }
-        .ps-open { position:absolute; inset:0; cursor:pointer; background:transparent; border:none; z-index:1; }
+        .ps-img { cursor:pointer; }
         .ps-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:2; width:44px; height:44px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
         .ps-nav-l { left:10px; }
         .ps-nav-r { right:10px; }
@@ -140,8 +140,7 @@ function PhotoSlider() {
       <div className="ps-wrap">
         <div className="ps-main" onTouchStart={swipeStart} onTouchEnd={swipeEnd}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="ps-img" src={ABOUT_IMAGES[idx]} alt={`Foto ${idx + 1}`} />
-          <button className="ps-open" onClick={() => setOpen(true)} aria-label="Ver imagen grande" />
+          <img className="ps-img" src={ABOUT_IMAGES[idx]} alt={`Foto ${idx + 1}`} onClick={() => setOpen(true)} />
           <button className="ps-nav ps-nav-l" onClick={prev} aria-label="Anterior">
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
           </button>
