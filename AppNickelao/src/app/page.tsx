@@ -88,110 +88,96 @@ const ABOUT_IMAGES = [
 ]
 
 function PhotoSlider() {
-  const [current, setCurrent] = useState(0)
-  const [lightbox, setLightbox] = useState(false)
-  const touchStartX = useRef<number | null>(null)
+  const [idx, setIdx] = useState(0)
+  const [open, setOpen] = useState(false)
+  const tx = useRef<number | null>(null)
+  const n = ABOUT_IMAGES.length
 
-  const prev = useCallback(() => setCurrent(i => (i === 0 ? ABOUT_IMAGES.length - 1 : i - 1)), [])
-  const next = useCallback(() => setCurrent(i => (i === ABOUT_IMAGES.length - 1 ? 0 : i + 1)), [])
+  const prev = useCallback(() => setIdx(i => (i - 1 + n) % n), [n])
+  const next = useCallback(() => setIdx(i => (i + 1) % n), [n])
 
   useEffect(() => {
-    if (!lightbox) return
-    function onKey(e: KeyboardEvent) {
+    if (!open) return
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
       if (e.key === 'ArrowLeft') prev()
       if (e.key === 'ArrowRight') next()
-      if (e.key === 'Escape') setLightbox(false)
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [lightbox, prev, next])
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [open, prev, next])
 
-  function onTouchStart(e: React.TouchEvent) { touchStartX.current = e.touches[0].clientX }
-  function onTouchEnd(e: React.TouchEvent) {
-    if (touchStartX.current === null) return
-    const delta = touchStartX.current - e.changedTouches[0].clientX
-    if (Math.abs(delta) > 40) delta > 0 ? next() : prev()
-    touchStartX.current = null
-  }
-
-  const btnStyle: React.CSSProperties = {
-    position: 'absolute', top: '50%', transform: 'translateY(-50%)',
-    width: 42, height: 42, borderRadius: '50%', border: 'none',
-    background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 2,
+  const swipeStart = (e: React.TouchEvent) => { tx.current = e.touches[0].clientX }
+  const swipeEnd = (e: React.TouchEvent) => {
+    if (tx.current === null) return
+    const d = tx.current - e.changedTouches[0].clientX
+    if (d > 40) next()
+    else if (d < -40) prev()
+    tx.current = null
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {/* Main image */}
-      <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-        style={{ position: 'relative', aspectRatio: '4/3', borderRadius: 14, overflow: 'hidden', background: '#c8c9c4' }}>
-        {/* Image as button — native button fires on iOS Safari */}
-        <button onClick={() => setLightbox(true)}
-          style={{ display: 'block', width: '100%', height: '100%', border: 'none', padding: 0, cursor: 'zoom-in', background: 'none' }}>
+    <>
+      <style>{`
+        .ps-wrap { display:flex; flex-direction:column; gap:8px; }
+        .ps-main { position:relative; border-radius:14px; overflow:hidden; background:#c8c9c4; aspect-ratio:4/3; }
+        .ps-img { width:100%; height:100%; object-fit:cover; display:block; }
+        .ps-open { position:absolute; inset:0; cursor:pointer; background:transparent; border:none; z-index:1; }
+        .ps-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:2; width:44px; height:44px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .ps-nav-l { left:10px; }
+        .ps-nav-r { right:10px; }
+        .ps-count { position:absolute; bottom:10px; right:12px; z-index:2; background:rgba(0,0,0,0.55); color:#fff; font-size:0.72rem; padding:2px 8px; border-radius:100px; pointer-events:none; }
+        .ps-thumbs { display:grid; gap:6px; }
+        .ps-thumb { aspect-ratio:1; border-radius:8px; overflow:hidden; border:none; padding:0; cursor:pointer; transition:opacity .18s,outline .18s; }
+        .ps-thumb img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+        .ps-lb { position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.93); display:flex; align-items:center; justify-content:center; }
+        .ps-lb img { max-width:90vw; max-height:85vh; object-fit:contain; border-radius:8px; display:block; pointer-events:none; }
+        .ps-lb-nav { position:absolute; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:none; background:rgba(255,255,255,0.18); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .ps-lb-close { position:absolute; top:16px; right:16px; border:none; background:rgba(255,255,255,0.18); color:#fff; cursor:pointer; padding:6px 14px; border-radius:20px; font-size:0.85rem; }
+        .ps-lb-count { position:absolute; bottom:16px; left:0; right:0; text-align:center; color:rgba(255,255,255,0.5); font-size:0.8rem; pointer-events:none; }
+      `}</style>
+
+      <div className="ps-wrap">
+        <div className="ps-main" onTouchStart={swipeStart} onTouchEnd={swipeEnd}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img key={current} src={ABOUT_IMAGES[current]} alt={`Nickelao Barber ${current + 1}`}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
-          />
-        </button>
-        <button onClick={prev} aria-label="Anterior"
-          style={{ ...btnStyle, left: 10 }}>
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-        <button onClick={next} aria-label="Siguiente"
-          style={{ ...btnStyle, right: 10 }}>
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-        </button>
-        <div style={{ position: 'absolute', bottom: 10, right: 12, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '0.72rem', padding: '2px 8px', borderRadius: 100, zIndex: 2, pointerEvents: 'none' }}>
-          {current + 1} / {ABOUT_IMAGES.length}
+          <img className="ps-img" src={ABOUT_IMAGES[idx]} alt={`Foto ${idx + 1}`} />
+          <button className="ps-open" onClick={() => setOpen(true)} aria-label="Ver imagen grande" />
+          <button className="ps-nav ps-nav-l" onClick={prev} aria-label="Anterior">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button className="ps-nav ps-nav-r" onClick={next} aria-label="Siguiente">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <span className="ps-count">{idx + 1} / {n}</span>
+        </div>
+
+        <div className="ps-thumbs" style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
+          {ABOUT_IMAGES.map((src, i) => (
+            <button key={src} className="ps-thumb" onClick={() => setIdx(i)}
+              style={{ opacity: i === idx ? 1 : 0.5, outline: i === idx ? '2px solid #547832' : '2px solid transparent', outlineOffset: 2 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={`Miniatura ${i + 1}`} />
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Thumbnails */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${ABOUT_IMAGES.length}, 1fr)`, gap: 6 }}>
-        {ABOUT_IMAGES.map((src, i) => (
-          <button key={src} onClick={() => setCurrent(i)}
-            style={{ aspectRatio: '1', borderRadius: 8, overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer',
-              outline: i === current ? '2px solid #547832' : '2px solid transparent',
-              outlineOffset: 2, opacity: i === current ? 1 : 0.55, transition: 'all 0.18s' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={`Miniatura ${i + 1}`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
-            />
-          </button>
-        ))}
-      </div>
-
-      {/* Lightbox */}
-      {lightbox && typeof document !== 'undefined' && createPortal(
-        <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-          onClick={() => setLightbox(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {open && typeof document !== 'undefined' && createPortal(
+        <div className="ps-lb" onTouchStart={swipeStart} onTouchEnd={swipeEnd} onClick={() => setOpen(false)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ABOUT_IMAGES[current]} alt={`Nickelao Barber ${current + 1}`}
-            onClick={e => e.stopPropagation()}
-            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 8, display: 'block' }}
-          />
-          <button onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior"
-            style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src={ABOUT_IMAGES[idx]} alt={`Foto ${idx + 1}`} onClick={e => e.stopPropagation()} />
+          <button className="ps-lb-nav" style={{ left: 12 }} onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior">
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
           </button>
-          <button onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente"
-            style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button className="ps-lb-nav" style={{ right: 12 }} onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente">
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </button>
-          <button onClick={() => setLightbox(false)}
-            style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '0.85rem', padding: '6px 14px', borderRadius: 20, letterSpacing: '0.04em' }}>
-            Cerrar ✕
-          </button>
-          <p style={{ position: 'absolute', bottom: 16, left: 0, right: 0, textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: '0.8rem', fontFamily: "'DM Sans', sans-serif" }}>
-            {current + 1} / {ABOUT_IMAGES.length}
-          </p>
+          <button className="ps-lb-close" onClick={() => setOpen(false)}>Cerrar ✕</button>
+          <span className="ps-lb-count">{idx + 1} / {n}</span>
         </div>,
         document.body
       )}
-    </div>
+    </>
   )
 }
 
@@ -287,7 +273,7 @@ export default function LandingPage() {
 
       {/* HERO */}
       <div style={{ background: 'var(--green-dark)', minHeight: '82vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '4rem 2rem', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(50,70,60,0.35) 60px, rgba(50,70,60,0.35) 62px)' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(50,70,60,0.35) 60px, rgba(50,70,60,0.35) 62px)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(242,194,48,0.15)', border: '1px solid var(--gold)', color: 'var(--gold)', fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.35rem 0.9rem', borderRadius: 100, marginBottom: '1.5rem' }}>
             <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>
