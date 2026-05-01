@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 
@@ -87,84 +87,24 @@ const ABOUT_IMAGES = [
   '/d9c5880943c14fe8bbc7b1f30c4aab-nick-home-barberia-biz-photo-e66e3340cd3e4bad869148a688b5eb-booksy.jpeg',
 ]
 
-// Mobile: pure CSS-transform swipe slider
-function MobileSlider() {
+function PhotoSlider() {
   const [current, setCurrent] = useState(0)
-  const [dragX, setDragX] = useState(0)
-  const startX = useRef<number | null>(null)
-  const dragging = useRef(false)
-
-  function onTouchStart(e: React.TouchEvent) {
-    startX.current = e.touches[0].clientX
-    dragging.current = true
-  }
-  function onTouchMove(e: React.TouchEvent) {
-    if (!dragging.current || startX.current === null) return
-    setDragX(e.touches[0].clientX - startX.current)
-  }
-  function onTouchEnd() {
-    if (!dragging.current) return
-    dragging.current = false
-    if (dragX < -50 && current < ABOUT_IMAGES.length - 1) setCurrent(c => c + 1)
-    else if (dragX > 50 && current > 0) setCurrent(c => c - 1)
-    setDragX(0)
-    startX.current = null
-  }
-
-  return (
-    <div style={{ borderRadius: 16, overflow: 'hidden', touchAction: 'pan-y' }}
-      onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-      {/* Strip */}
-      <div style={{
-        display: 'flex',
-        transform: `translateX(calc(${-current * 100}% + ${dragX}px))`,
-        transition: dragging.current ? 'none' : 'transform 0.32s ease',
-        willChange: 'transform',
-      }}>
-        {ABOUT_IMAGES.map((src, i) => (
-          <div key={src} style={{ minWidth: '100%', aspectRatio: '4/3', flexShrink: 0 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={`Nickelao Barber ${i + 1}`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', userSelect: 'none', pointerEvents: 'none' }}
-              draggable={false}
-            />
-          </div>
-        ))}
-      </div>
-      {/* Dots */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, padding: '10px 0 4px', background: '#f5f4e6' }}>
-        {ABOUT_IMAGES.map((_, i) => (
-          <div key={i} style={{
-            width: i === current ? 20 : 7, height: 7, borderRadius: 100,
-            background: i === current ? '#547832' : '#c8c9c4',
-            transition: 'all 0.3s',
-          }} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// Desktop: collage grid + lightbox
-function AboutCollage() {
-  const [lightbox, setLightbox] = useState<number | null>(null)
+  const [lightbox, setLightbox] = useState(false)
   const touchStartX = useRef<number | null>(null)
 
-  function openLightbox(i: number) { setLightbox(i); document.body.style.overflow = 'hidden' }
-  function closeLightbox() { setLightbox(null); document.body.style.overflow = '' }
-  function prev() { setLightbox(i => i === null ? null : (i - 1 + ABOUT_IMAGES.length) % ABOUT_IMAGES.length) }
-  function next() { setLightbox(i => i === null ? null : (i + 1) % ABOUT_IMAGES.length) }
+  const prev = useCallback(() => setCurrent(i => (i === 0 ? ABOUT_IMAGES.length - 1 : i - 1)), [])
+  const next = useCallback(() => setCurrent(i => (i === ABOUT_IMAGES.length - 1 ? 0 : i + 1)), [])
 
   useEffect(() => {
+    if (!lightbox) return
     function onKey(e: KeyboardEvent) {
-      if (lightbox === null) return
-      if (e.key === 'Escape') closeLightbox()
       if (e.key === 'ArrowLeft') prev()
       if (e.key === 'ArrowRight') next()
+      if (e.key === 'Escape') setLightbox(false)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [lightbox])
+  }, [lightbox, prev, next])
 
   function onTouchStart(e: React.TouchEvent) { touchStartX.current = e.touches[0].clientX }
   function onTouchEnd(e: React.TouchEvent) {
@@ -174,55 +114,81 @@ function AboutCollage() {
     touchStartX.current = null
   }
 
-  const layout: React.CSSProperties[] = [
-    { gridColumn: '1', gridRow: '1 / 3' },
-    { gridColumn: '2', gridRow: '1' },
-    { gridColumn: '3', gridRow: '1' },
-    { gridColumn: '2', gridRow: '2' },
-    { gridColumn: '3', gridRow: '2' },
-  ]
+  const btnStyle: React.CSSProperties = {
+    position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+    width: 42, height: 42, borderRadius: '50%', border: 'none',
+    background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 2,
+  }
 
   return (
-    <>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gridTemplateRows: '200px 200px', gap: 6, borderRadius: 16, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Main image */}
+      <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+        style={{ position: 'relative', aspectRatio: '4/3', borderRadius: 14, overflow: 'hidden', background: '#c8c9c4', cursor: 'zoom-in' }}
+        onClick={() => setLightbox(true)}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img key={current} src={ABOUT_IMAGES[current]} alt={`Nickelao Barber ${current + 1}`}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'opacity 0.25s' }}
+        />
+        <button onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior"
+          style={{ ...btnStyle, left: 10 }}>
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente"
+          style={{ ...btnStyle, right: 10 }}>
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div style={{ position: 'absolute', bottom: 10, right: 12, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '0.72rem', padding: '2px 8px', borderRadius: 100, zIndex: 2 }}>
+          {current + 1} / {ABOUT_IMAGES.length}
+        </div>
+      </div>
+
+      {/* Thumbnails */}
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${ABOUT_IMAGES.length}, 1fr)`, gap: 6 }}>
         {ABOUT_IMAGES.map((src, i) => (
-          <button key={src} onClick={() => openLightbox(i)}
-            style={{ ...layout[i], overflow: 'hidden', cursor: 'zoom-in', background: '#c8c9c4', border: 'none', padding: 0, display: 'block' }}>
+          <button key={src} onClick={() => setCurrent(i)}
+            style={{ aspectRatio: '1', borderRadius: 8, overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer',
+              outline: i === current ? '2px solid #547832' : '2px solid transparent',
+              outlineOffset: 2, opacity: i === current ? 1 : 0.55, transition: 'all 0.18s' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={`Nickelao Barber ${i + 1}`}
+            <img src={src} alt={`Miniatura ${i + 1}`}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
             />
           </button>
         ))}
       </div>
 
-      {lightbox !== null && typeof document !== 'undefined' && createPortal(
+      {/* Lightbox */}
+      {lightbox && typeof document !== 'undefined' && createPortal(
         <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(10,16,14,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          onClick={() => setLightbox(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ABOUT_IMAGES[lightbox]} alt={`Nickelao Barber ${lightbox + 1}`}
-            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 10, display: 'block' }}
+          <img src={ABOUT_IMAGES[current]} alt={`Nickelao Barber ${current + 1}`}
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 8, display: 'block' }}
           />
-          <button onClick={closeLightbox} aria-label="Cerrar"
-            style={{ position: 'absolute', top: 16, right: 16, width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>
-            ✕
+          <button onClick={e => { e.stopPropagation(); prev() }} aria-label="Anterior"
+            style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
           </button>
-          <button onClick={prev} aria-label="Anterior"
-            style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          <button onClick={e => { e.stopPropagation(); next() }} aria-label="Siguiente"
+            style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </button>
-          <button onClick={next} aria-label="Siguiente"
-            style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          <button onClick={() => setLightbox(false)}
+            style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '0.85rem', padding: '6px 14px', borderRadius: 20, letterSpacing: '0.04em' }}>
+            Cerrar ✕
           </button>
-          <div onClick={closeLightbox}
-            style={{ position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: '0.82rem', fontFamily: "'DM Sans', sans-serif" }}>
-            {lightbox + 1} / {ABOUT_IMAGES.length} · Clic para cerrar
-          </div>
+          <p style={{ position: 'absolute', bottom: 16, left: 0, right: 0, textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: '0.8rem', fontFamily: "'DM Sans', sans-serif" }}>
+            {current + 1} / {ABOUT_IMAGES.length}
+          </p>
         </div>,
         document.body
       )}
-    </>
+    </div>
   )
 }
 
@@ -290,15 +256,12 @@ export default function LandingPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
-        .about-mobile-section { display: none; }
-        .about-desktop-section { display: block; }
         @media (max-width: 768px) {
           .landing-nav { display: none !important; }
+          .landing-about-grid { grid-template-columns: 1fr !important; }
           .landing-contact-grid { grid-template-columns: 1fr !important; }
           .landing-footer-inner { grid-template-columns: 1fr !important; gap: 2rem !important; }
           .hero h1 { font-size: 2.4rem !important; }
-          .about-mobile-section { display: block; }
-          .about-desktop-section { display: none; }
         }
       `}</style>
 
@@ -356,11 +319,11 @@ export default function LandingPage() {
       {/* SERVICES */}
       <ServicesSection />
 
-      {/* ABOUT — desktop */}
-      <section id="nosotros" className="about-desktop-section" style={{ padding: '5rem 2rem', background: 'var(--cream)' }}>
+      {/* ABOUT */}
+      <section id="nosotros" style={{ padding: '5rem 2rem', background: 'var(--cream)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-            <AboutCollage />
+          <div className="landing-about-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
+            <PhotoSlider />
             <div>
               <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Nuestra historia</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 2.5vw, 2.4rem)', color: 'var(--green-dark)', marginBottom: '1.25rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
@@ -375,25 +338,6 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ABOUT — mobile */}
-      <section id="nosotros" className="about-mobile-section" style={{ background: 'var(--cream)', paddingBottom: '3rem' }}>
-        <MobileSlider />
-        <div style={{ padding: '2rem 1.5rem 0' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.5rem' }}>Nuestra historia</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', color: 'var(--green-dark)', marginBottom: '1rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
-          <p style={{ fontSize: '0.92rem', color: 'var(--text-mid)', lineHeight: 1.7, marginBottom: '0.75rem' }}>En Nickelao Barber creemos que un buen corte es mucho más que estética: es confianza, identidad y bienestar.</p>
-          <p style={{ fontSize: '0.92rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>Cada cliente recibe un trato personalizado en un espacio cuidado y relajado.</p>
-          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--cream-mid)' }}>
-            {[{ n: '8+', label: 'Años' }, { n: '2k+', label: 'Clientes' }, { n: '15+', label: 'Servicios' }].map(s => (
-              <div key={s.n}>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', fontWeight: 700, color: 'var(--green-dark)', lineHeight: 1 }}>{s.n}</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-light)', marginTop: '0.2rem', fontWeight: 500 }}>{s.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
