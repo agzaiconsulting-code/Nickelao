@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
@@ -75,6 +75,55 @@ function IconInstagram() {
       <circle cx="12" cy="12" r="3" />
       <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
     </svg>
+  )
+}
+
+const ABOUT_IMAGES = [
+  '/05ad044bdb6847c391c7690566a972-nick-home-biz-photo-8777a9bf17f94e57bddf25132b92f5-booksy.jpeg',
+  '/61dfbe29b5d44ef3b926e35b445ac1-nick-home-barberia-biz-photo-839b40cd5a41454ab857411f660b5e-booksy.jpeg',
+  '/8d8ec92edf2f4d75b6094242c3b68d-nick-home-biz-photo-7c4a9ec3f0df4a89bb2f0e7ae7a93e-booksy.jpeg',
+  '/bb0fad36327d43cabe45ae40cb65b9-nick-home-barberia-biz-photo-8b230acdabb24db4aaee2c70a4ffa9-booksy.jpeg',
+  '/d9c5880943c14fe8bbc7b1f30c4aab-nick-home-barberia-biz-photo-e66e3340cd3e4bad869148a688b5eb-booksy.jpeg',
+]
+
+function AboutSlider() {
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    const t = setInterval(() => setCurrent(c => (c + 1) % ABOUT_IMAGES.length), 4000)
+    return () => clearInterval(t)
+  }, [])
+
+  function prev() { setCurrent(c => (c - 1 + ABOUT_IMAGES.length) % ABOUT_IMAGES.length) }
+  function next() { setCurrent(c => (c + 1) % ABOUT_IMAGES.length) }
+
+  return (
+    <div style={{ aspectRatio: '4/5', borderRadius: 16, overflow: 'hidden', position: 'relative', background: 'var(--sage)' }}>
+      {ABOUT_IMAGES.map((src, i) => (
+        <Image key={src} src={src} alt={`Nickelao Barber ${i + 1}`} fill
+          style={{ objectFit: 'cover', opacity: i === current ? 1 : 0, transition: 'opacity 0.7s ease', position: 'absolute', inset: 0 }}
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+      ))}
+
+      {/* Controls */}
+      <button onClick={prev} aria-label="Anterior"
+        style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(16,26,22,0.55)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+      </button>
+      <button onClick={next} aria-label="Siguiente"
+        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(16,26,22,0.55)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+      </button>
+
+      {/* Dots */}
+      <div style={{ position: 'absolute', bottom: 14, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 6, zIndex: 2 }}>
+        {ABOUT_IMAGES.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} aria-label={`Ir a imagen ${i + 1}`}
+            style={{ width: i === current ? 20 : 7, height: 7, borderRadius: 100, border: 'none', background: i === current ? 'var(--gold)' : 'rgba(255,255,255,0.55)', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }} />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -213,13 +262,7 @@ export default function LandingPage() {
       <section id="nosotros" style={{ padding: '5rem 2rem', background: 'var(--cream)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div className="landing-about-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-            <div style={{ aspectRatio: '4/5', background: 'var(--sage)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 18px, rgba(80,110,80,0.3) 18px, rgba(80,110,80,0.3) 20px)' }} />
-              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <Image src="/logo.jpeg" alt="Nickelao Barber" width={120} height={120} style={{ borderRadius: 16, border: '4px solid var(--cream)', objectFit: 'cover' }} />
-              </div>
-              <div style={{ position: 'absolute', bottom: '1.5rem', left: '1.5rem', right: '1.5rem', zIndex: 1, fontSize: '0.72rem', fontFamily: 'monospace', color: 'rgba(60,80,60,0.5)', textAlign: 'center' }}>[ foto del local / equipo ]</div>
-            </div>
+            <AboutSlider />
             <div>
               <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Nuestra historia</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 2.5vw, 2.4rem)', color: 'var(--green-dark)', marginBottom: '1.25rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
