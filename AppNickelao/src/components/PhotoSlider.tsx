@@ -11,13 +11,8 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
   const [current, setCurrent] = useState(0)
   const [lightbox, setLightbox] = useState(false)
 
-  const prev = useCallback(() => {
-    setCurrent(i => (i === 0 ? photos.length - 1 : i - 1))
-  }, [photos.length])
-
-  const next = useCallback(() => {
-    setCurrent(i => (i === photos.length - 1 ? 0 : i + 1))
-  }, [photos.length])
+  const prev = useCallback(() => setCurrent(i => (i === 0 ? photos.length - 1 : i - 1)), [photos.length])
+  const next = useCallback(() => setCurrent(i => (i === photos.length - 1 ? 0 : i + 1)), [photos.length])
 
   useEffect(() => {
     if (!lightbox) return
@@ -30,64 +25,52 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
     return () => window.removeEventListener('keydown', onKey)
   }, [lightbox, prev, next])
 
+  const btnStyle: React.CSSProperties = {
+    position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+    width: 40, height: 40, borderRadius: '50%',
+    background: 'rgba(0,0,0,0.45)', border: 'none', color: 'white',
+    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'background 0.2s',
+  }
+
   return (
-    <div className="space-y-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
       {/* Slider principal */}
-      <div className="relative bg-brand-gray2 rounded-2xl overflow-hidden aspect-[4/3] shadow-lg group">
+      <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', aspectRatio: '4/3', boxShadow: '0 4px 24px rgba(0,0,0,0.12)', background: '#ccc' }}>
         <Image
           key={current}
           src={photos[current]}
           alt={`Foto ${current + 1} de ${photos.length}`}
           fill
-          className="object-cover cursor-pointer transition-opacity duration-300"
-          sizes="(max-width: 768px) 100vw, 600px"
+          style={{ objectFit: 'cover', cursor: 'zoom-in' }}
+          sizes="(max-width: 768px) 100vw, 550px"
           onClick={() => setLightbox(true)}
-          priority
         />
-
-        {/* Flecha izquierda */}
-        <button
-          onClick={prev}
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/65 text-white flex items-center justify-center transition-colors"
-          aria-label="Foto anterior"
-        >
+        <button onClick={prev} style={{ ...btnStyle, left: 12 }} aria-label="Foto anterior">
           <ChevronLeft />
         </button>
-
-        {/* Flecha derecha */}
-        <button
-          onClick={next}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/65 text-white flex items-center justify-center transition-colors"
-          aria-label="Foto siguiente"
-        >
+        <button onClick={next} style={{ ...btnStyle, right: 12 }} aria-label="Foto siguiente">
           <ChevronRight />
         </button>
-
-        {/* Contador */}
-        <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+        <div style={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(0,0,0,0.5)', color: 'white', fontSize: 12, padding: '4px 10px', borderRadius: 100, pointerEvents: 'none' }}>
           {current + 1} / {photos.length}
         </div>
       </div>
 
       {/* Miniaturas */}
-      <div className="grid grid-cols-5 gap-2">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
         {photos.map((src, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`relative aspect-square rounded-lg overflow-hidden transition-all ${
-              i === current
-                ? 'ring-2 ring-brand-green ring-offset-1'
-                : 'opacity-60 hover:opacity-100'
-            }`}
+            style={{
+              position: 'relative', aspectRatio: '1', borderRadius: 8, overflow: 'hidden',
+              border: `2px solid ${i === current ? '#547832' : 'transparent'}`,
+              opacity: i === current ? 1 : 0.6, padding: 0, cursor: 'pointer', background: 'none',
+            }}
           >
-            <Image
-              src={src}
-              alt={`Miniatura ${i + 1}`}
-              fill
-              className="object-cover"
-              sizes="80px"
-            />
+            <Image src={src} alt={`Miniatura ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="80px" />
           </button>
         ))}
       </div>
@@ -95,49 +78,26 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
           onClick={() => setLightbox(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <div
-            className="relative w-full max-w-4xl max-h-[90vh] mx-4"
+            style={{ position: 'relative', width: '100%', maxWidth: 900, padding: '0 56px' }}
             onClick={e => e.stopPropagation()}
           >
-            <div className="relative aspect-[4/3]">
-              <Image
-                src={photos[current]}
-                alt={`Foto ${current + 1}`}
-                fill
-                className="object-contain"
-                sizes="90vw"
-              />
+            <div style={{ position: 'relative', aspectRatio: '4/3' }}>
+              <Image src={photos[current]} alt={`Foto ${current + 1}`} fill style={{ objectFit: 'contain' }} sizes="90vw" />
             </div>
-
-            {/* Flechas lightbox */}
-            <button
-              onClick={prev}
-              className="absolute left-[-3rem] top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center transition-colors"
-              aria-label="Foto anterior"
-            >
+            <button onClick={prev} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ChevronLeft />
             </button>
-            <button
-              onClick={next}
-              className="absolute right-[-3rem] top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center transition-colors"
-              aria-label="Foto siguiente"
-            >
+            <button onClick={next} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ChevronRight />
             </button>
-
-            {/* Cerrar */}
-            <button
-              onClick={() => setLightbox(false)}
-              className="absolute top-[-3rem] right-0 text-white/70 hover:text-white text-sm tracking-wide transition-colors"
-            >
+            <button onClick={() => setLightbox(false)} style={{ position: 'absolute', top: -40, right: 0, background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: 14 }}>
               Cerrar ✕
             </button>
-
-            {/* Contador lightbox */}
-            <p className="text-center text-white/50 text-sm mt-3">
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 14, marginTop: 12 }}>
               {current + 1} / {photos.length}
             </p>
           </div>
