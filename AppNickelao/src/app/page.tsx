@@ -144,6 +144,13 @@ function IconInstagram() {
     </svg>
   )
 }
+function IconTikTok() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.27 8.27 0 0 0 4.84 1.56V6.79a4.85 4.85 0 0 1-1.07-.1z" />
+    </svg>
+  )
+}
 
 // ── AUTH MODAL ───────────────────────────────────────────────────────────────
 
@@ -767,7 +774,7 @@ export default function LandingPage() {
               <div style={{ marginTop: '1.5rem' }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-light)', marginBottom: '0.6rem' }}>Horario</div>
                 <div style={{ fontSize: '0.88rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
-                  Lun – Vie: 09:00 – 20:00<br />Sábados: 09:00 – 15:00<br />Domingos: Cerrado
+                  Lun – Vie: 09:30 – 13:30 , 16:00 - 20:30<br />Sábados: 09:00 – 13:00<br />Domingos: Cerrado
                 </div>
               </div>
             </div>
@@ -797,19 +804,23 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer style={{ background: 'var(--green-dark)', color: 'rgba(190,205,188,0.9)', padding: '3rem 2rem 2rem' }}>
-        <div className="landing-footer-inner" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '3rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(70,100,70,0.5)' }}>
+        <div className="landing-footer-inner" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '2rem', paddingBottom: '2rem', borderBottom: '1px solid rgba(70,100,70,0.5)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Image src="/logo.jpeg" alt="Logo" width={38} height={38} style={{ borderRadius: 8, objectFit: 'cover', border: '2px solid var(--gold-dark)' }} />
               <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.05rem', fontWeight: 700, color: 'var(--cream)' }}>Nickelao Barber</span>
             </div>
             <p style={{ fontSize: '0.82rem', lineHeight: 1.6 }}>Barbería profesional donde la tradición<br />y el estilo se encuentran.</p>
-            <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ width: 38, height: 38, borderRadius: 8, border: '1.5px solid rgba(80,110,80,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(180,200,178,0.9)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(80,110,80,0.6)'; (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(180,200,178,0.9)' }}>
-                <IconInstagram />
-              </a>
+            <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(80,110,80,0.4)' }}>
+              <iframe
+                src="https://maps.google.com/maps?q=HP9R%2B3G+Foz,Spain&output=embed&z=17"
+                width="100%"
+                height="130"
+                style={{ border: 0, display: 'block' }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </div>
           <div>
@@ -831,6 +842,23 @@ export default function LandingPage() {
                   onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(175,195,173,0.9)'}>{label}</a></li>
               ))}
             </ul>
+          </div>
+          <div>
+            <h4 style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', marginBottom: '1rem' }}>Síguenos en RR.SS</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'rgba(175,195,173,0.9)', transition: 'color 0.18s', fontSize: '0.85rem' }}
+                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)'}
+                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(175,195,173,0.9)'}>
+                <span style={{ width: 32, height: 32, borderRadius: 8, border: '1.5px solid rgba(80,110,80,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconInstagram /></span>
+                Instagram
+              </a>
+              <a href="https://www.tiktok.com/@nickhomebarber?_r=1&_t=ZN-963sEBBWEWx" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'rgba(175,195,173,0.9)', transition: 'color 0.18s', fontSize: '0.85rem' }}
+                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)'}
+                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(175,195,173,0.9)'}>
+                <span style={{ width: 32, height: 32, borderRadius: 8, border: '1.5px solid rgba(80,110,80,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconTikTok /></span>
+                TikTok
+              </a>
+            </div>
           </div>
         </div>
         <div style={{ maxWidth: 1100, margin: '0 auto', paddingTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem', color: 'rgba(120,150,118,0.8)' }}>
