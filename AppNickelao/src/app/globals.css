@@ -20,3 +20,14 @@
   html { scroll-behavior: smooth; }
   body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
 }
+
+.landing-hamburger { display: none; }
+
+@media (max-width: 768px) {
+  .landing-nav { display: none !important; }
+  .landing-hamburger { display: flex !important; }
+  .landing-about-grid { grid-template-columns: 1fr !important; }
+  .landing-contact-grid { grid-template-columns: 1fr !important; }
+  .landing-footer-inner { grid-template-columns: 1fr !important; gap: 2rem !important; }
+  .hero h1 { font-size: 2.4rem !important; }
+}
