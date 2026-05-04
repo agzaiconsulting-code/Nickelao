@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       ...(location ? { location } : {}),
     },
     include: {
-      user: { select: { id: true, name: true, lastName: true, avatarUrl: true } },
+      user: { select: { id: true, name: true, lastName: true, image: true } },
     },
   })
 

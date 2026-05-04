@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { Playfair_Display, DM_Sans } from 'next/font/google'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import SessionProvider from '@/components/SessionProvider'
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -17,11 +20,14 @@ export const metadata: Metadata = {
   description: 'Tu barbería de confianza en Foz y Mondoñedo',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(authOptions)
   return (
     <html lang="es">
       <body className={`${playfair.variable} ${dmSans.variable}`}>
-        {children}
+        <SessionProvider session={session}>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   )

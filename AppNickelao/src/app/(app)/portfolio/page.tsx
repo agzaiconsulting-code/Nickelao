@@ -6,14 +6,14 @@ interface Comment {
   id: string
   text: string
   createdAt: string
-  user: { name: string; avatarUrl: string | null }
+  user: { name: string; image: string | null }
 }
 
 interface PortfolioImage {
   id: string
   imageUrl: string
   createdAt: string
-  client: { name: string; lastName: string; avatarUrl: string | null }
+  client: { name: string; lastName: string; image: string | null }
   comments: Comment[]
   _count: { comments: number }
 }
@@ -110,8 +110,8 @@ export default function PortfolioPage() {
             </button>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-[#547832] flex items-center justify-center text-xs font-bold text-white overflow-hidden">
-                {open.client.avatarUrl
-                  ? <img src={open.client.avatarUrl} alt="" className="w-full h-full object-cover" />
+                {open.client.image
+                  ? <img src={open.client.image} alt="" className="w-full h-full object-cover" />
                   : `${open.client.name[0]}${open.client.lastName[0]}`
                 }
               </div>
@@ -132,8 +132,8 @@ export default function PortfolioPage() {
             {open.comments.map(c => (
               <div key={c.id} className="flex gap-3 px-4 py-3 border-b border-[#F5F4E6]">
                 <div className="w-8 h-8 rounded-full bg-[#547832] flex items-center justify-center text-xs font-bold text-white shrink-0 overflow-hidden">
-                  {c.user.avatarUrl
-                    ? <img src={c.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  {c.user.image
+                    ? <img src={c.user.image} alt="" className="w-full h-full object-cover" />
                     : c.user.name[0]
                   }
                 </div>

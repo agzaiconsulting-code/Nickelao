@@ -70,8 +70,8 @@ export default async function HomePage() {
         <div className="bg-brand-dark rounded-2xl p-5 flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-brand-yellow mb-1">NickPoints</p>
-            <p className="font-display text-3xl font-bold text-brand-cream">{user.points}</p>
-            <p className="text-brand-gray1 text-xs mt-1">{100 - user.points} para corte gratis</p>
+            <p className="font-display text-3xl font-bold text-brand-cream">{user.points ?? 0}</p>
+            <p className="text-brand-gray1 text-xs mt-1">{100 - (user.points ?? 0)} para corte gratis</p>
           </div>
           <div className="text-5xl opacity-20">⭐</div>
         </div>
