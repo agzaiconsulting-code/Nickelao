@@ -1,23 +1,18 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getCurrentUser } from '@/lib/auth'
 
+// Public — needed by the booking form before login
 export async function GET(req: Request) {
-  const user = await getCurrentUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
   const { searchParams } = new URL(req.url)
   const location = searchParams.get('location') as 'FOZ' | 'MONDONEDO' | null
 
   const barbers = await prisma.barber.findMany({
-    where: {
-      isActive: true,
-      ...(location ? { location } : {}),
-    },
-    include: {
-      user: { select: { id: true, name: true, lastName: true, image: true } },
-    },
+    where: { isActive: true, ...(location ? { location } : {}) },
+    include: { user: { select: { name: true } } },
+    orderBy: { user: { name: 'asc' } },
   })
 
-  return NextResponse.json(barbers)
+  return NextResponse.json(
+    barbers.map(b => ({ id: b.id, name: b.user.name ?? '—' }))
+  )
 }

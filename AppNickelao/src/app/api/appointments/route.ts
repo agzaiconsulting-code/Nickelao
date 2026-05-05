@@ -11,7 +11,7 @@ export async function GET() {
     orderBy: { startTime: 'desc' },
     include: {
       service: true,
-      barber: { include: { user: { select: { name: true, lastName: true } } } },
+      barber: { include: { user: { select: { name: true } } } },
       review: true,
     },
   })
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     data: { clientId: user.id, barberId, serviceId, startTime: start, endTime: end, status: 'CONFIRMED' },
     include: {
       service: true,
-      barber: { include: { user: { select: { name: true, lastName: true } } } },
+      barber: { include: { user: { select: { name: true } } } },
     },
   })
 

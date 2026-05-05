@@ -6,12 +6,12 @@ export async function POST(req: Request) {
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { name, lastName, phone } = await req.json()
-  if (!name || !lastName) return NextResponse.json({ error: 'name and lastName required' }, { status: 400 })
+  const { name, phone } = await req.json()
+  if (!name) return NextResponse.json({ error: 'name required' }, { status: 400 })
 
   const updated = await prisma.user.update({
     where: { id: user.id },
-    data: { name, lastName, phone: phone ?? null },
+    data: { name, phone: phone ?? null },
   })
 
   return NextResponse.json(updated)

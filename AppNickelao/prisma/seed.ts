@@ -27,29 +27,29 @@ const services = [
 ]
 
 const barbers = [
-  { clerkId: 'barber_nick', email: 'nick@nickelao.com', name: 'Nick', lastName: 'Barber', location: 'FOZ' as const },
-  { clerkId: 'barber_diego', email: 'diego@nickelao.com', name: 'Diego', lastName: 'Barber', location: 'FOZ' as const },
-  { clerkId: 'barber_roberto', email: 'roberto@nickelao.com', name: 'Roberto', lastName: 'Barber', location: 'MONDONEDO' as const },
-  { clerkId: 'barber_pepe', email: 'pepe@nickelao.com', name: 'Pepe', lastName: 'Barber', location: 'MONDONEDO' as const },
+  { email: 'nick@nickelao.com',    name: 'Nick',    location: 'FOZ'       as const },
+  { email: 'diego@nickelao.com',   name: 'Diego',   location: 'FOZ'       as const },
+  { email: 'roberto@nickelao.com', name: 'Roberto', location: 'MONDONEDO' as const },
+  { email: 'pepe@nickelao.com',    name: 'Pepe',    location: 'MONDONEDO' as const },
 ]
 
 async function main() {
   console.log('Seeding services…')
   for (const service of services) {
     await prisma.service.upsert({
-      where: { name: service.name } as never,
+      where: { name: service.name },
       update: service,
       create: service,
     })
   }
-  console.log(`✓ ${services.length} servicios insertados`)
+  console.log(`✓ ${services.length} servicios`)
 
   console.log('Seeding barbers…')
   for (const b of barbers) {
     const user = await prisma.user.upsert({
-      where: { clerkId: b.clerkId },
-      update: { name: b.name, lastName: b.lastName, email: b.email },
-      create: { clerkId: b.clerkId, email: b.email, name: b.name, lastName: b.lastName, role: 'BARBER' },
+      where: { email: b.email },
+      update: { name: b.name },
+      create: { email: b.email, name: b.name, role: 'BARBER' },
     })
     await prisma.barber.upsert({
       where: { userId: user.id },
@@ -57,7 +57,7 @@ async function main() {
       create: { userId: user.id, location: b.location, isActive: true },
     })
   }
-  console.log(`✓ ${barbers.length} peluqueros insertados`)
+  console.log(`✓ ${barbers.length} peluqueros`)
 }
 
 main()

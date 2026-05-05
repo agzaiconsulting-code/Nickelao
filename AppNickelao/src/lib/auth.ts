@@ -1,18 +1,24 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { cookies } from 'next/headers'
 import { prisma } from './prisma'
 
 export async function getCurrentUser() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) return null
+  const cookieStore = await cookies()
+  const sessionToken =
+    cookieStore.get('next-auth.session-token')?.value ??
+    cookieStore.get('__Secure-next-auth.session-token')?.value
+  if (!sessionToken) return null
   try {
-    return await prisma.user.findUnique({ where: { id: session.user.id } })
+    const session = await prisma.session.findUnique({
+      where: { sessionToken },
+      include: { user: true },
+    })
+    if (!session || session.expires < new Date()) return null
+    return session.user
   } catch {
     return null
   }
 }
 
 export async function getSessionUser() {
-  const session = await getServerSession(authOptions)
-  return session?.user ?? null
+  return getCurrentUser()
 }

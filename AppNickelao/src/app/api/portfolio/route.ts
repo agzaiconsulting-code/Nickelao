@@ -6,7 +6,7 @@ export async function GET() {
   const images = await prisma.portfolioImage.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      client: { select: { name: true, lastName: true, image: true } },
+      client: { select: { name: true, image: true } },
       comments: {
         orderBy: { createdAt: 'asc' },
         include: { user: { select: { name: true, image: true } } },

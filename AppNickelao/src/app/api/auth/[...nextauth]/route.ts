@@ -11,6 +11,7 @@ export const authOptions: AuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   callbacks: {
@@ -20,7 +21,6 @@ export const authOptions: AuthOptions = {
         ...session.user,
         id: user.id,
         role: (user as { role: Role }).role,
-        lastName: (user as { lastName?: string | null }).lastName ?? null,
         points: (user as { points?: number }).points ?? 0,
       },
     }),
@@ -28,6 +28,7 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: '/',
   },
+  debug: process.env.NODE_ENV === 'development',
 }
 
 const handler = NextAuth(authOptions)
