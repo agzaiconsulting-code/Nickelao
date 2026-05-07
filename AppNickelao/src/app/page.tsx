@@ -446,7 +446,7 @@ function BookingSection({ onAuthRequired, isLoggedIn }: { onAuthRequired: () => 
 
   const assignedBarberId = selectedTime
     ? slotBarberMap[selectedTime]
-    : (barberPref === 'auto' ? dbBarbers[0]?.id : barberPref)
+    : (barberPref === 'auto' ? null : barberPref)
   const assignedBarber = dbBarbers.find(b => b.id === assignedBarberId)
 
   // 7-day strip (today+1 → today+7+window)
@@ -632,7 +632,6 @@ function BookingSection({ onAuthRequired, isLoggedIn }: { onAuthRequired: () => 
                   )}
                   <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-dark)' }}>
                     {assignedBarber?.name ?? 'Autoasignación'}
-                    {barberPref === 'auto' && assignedBarber ? ' (auto)' : ''}
                   </span>
                 </div>
                 <button onClick={() => setShowBarberPicker(p => !p)}

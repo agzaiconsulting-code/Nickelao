@@ -18,8 +18,8 @@ export async function GET(req: Request) {
   const dayStart  = new Date(`${dateStr}T00:00:00.000Z`)
   const dayEnd    = new Date(`${dateStr}T23:59:59.999Z`)
 
-  const result: { time: string; barberId: string }[] = []
-  const usedTimes = new Set<string>()
+  // Collect all available barbers per time slot
+  const slotMap: Record<string, string[]> = {}
 
   for (const barberId of barberIds) {
     const [appointments, unavailability] = await Promise.all([
@@ -40,12 +40,16 @@ export async function GET(req: Request) {
 
     const slots = calculateAvailableSlots(date, duration, blocked)
     for (const time of slots) {
-      if (!usedTimes.has(time)) {
-        usedTimes.add(time)
-        result.push({ time, barberId })
-      }
+      if (!slotMap[time]) slotMap[time] = []
+      slotMap[time].push(barberId)
     }
   }
+
+  // Randomly assign one available barber per slot
+  const result = Object.entries(slotMap).map(([time, ids]) => ({
+    time,
+    barberId: ids[Math.floor(Math.random() * ids.length)],
+  }))
 
   result.sort((a, b) => a.time.localeCompare(b.time))
   return NextResponse.json(result)
