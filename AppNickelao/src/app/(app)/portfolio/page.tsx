@@ -13,9 +13,18 @@ interface PortfolioImage {
   id: string
   imageUrl: string
   createdAt: string
-  client: { name: string; lastName: string; image: string | null }
+  client: { name: string; image: string | null }
+  review: { rating: number; text: string | null } | null
   comments: Comment[]
   _count: { comments: number }
+}
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <span className="text-[#F2C230] text-sm">
+      {'★'.repeat(rating)}{'☆'.repeat(5 - rating)}
+    </span>
+  )
 }
 
 export default function PortfolioPage() {
@@ -57,15 +66,12 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4E6]">
-      {/* Header */}
       <div className="bg-[#1E2A27] px-5 pt-14 pb-5">
         <h1 className="text-[#F5F4E6] text-2xl font-bold">Portfolio</h1>
-        <p className="text-[#A7A8A3] text-sm mt-1">Trabajos de nuestros barberos</p>
+        <p className="text-[#A7A8A3] text-sm mt-1">Trabajos de nuestros clientes</p>
       </div>
 
-      {loading && (
-        <p className="text-center text-[#A7A8A3] py-16">Cargando…</p>
-      )}
+      {loading && <p className="text-center text-[#A7A8A3] py-16">Cargando…</p>}
 
       {!loading && images.length === 0 && (
         <div className="text-center py-16 px-6">
@@ -85,6 +91,11 @@ export default function PortfolioPage() {
               className="relative aspect-square bg-[#E6E6E0] overflow-hidden"
             >
               <img src={img.imageUrl} alt="" className="w-full h-full object-cover" />
+              {img.review && (
+                <div className="absolute bottom-1 left-1 bg-black/60 rounded px-1 py-0.5">
+                  <span className="text-[#F2C230] text-[10px]">{'★'.repeat(img.review.rating)}</span>
+                </div>
+              )}
               {img._count.comments > 0 && (
                 <div className="absolute bottom-1.5 right-1.5 bg-black/60 rounded-md px-1.5 py-0.5 flex items-center gap-1">
                   <svg width="10" height="10" fill="white" viewBox="0 0 24 24">
@@ -101,32 +112,37 @@ export default function PortfolioPage() {
       {/* Detail modal */}
       {open && (
         <div className="fixed inset-0 bg-black z-50 flex flex-col">
-          {/* Top bar */}
           <div className="flex items-center gap-3 px-4 py-3 bg-black">
             <button onClick={() => setOpen(null)} className="text-white p-1">
               <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M19 12H5M12 5l-7 7 7 7"/>
               </svg>
             </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#547832] flex items-center justify-center text-xs font-bold text-white overflow-hidden">
+            <div className="flex items-center gap-2 flex-1">
+              <div className="w-8 h-8 rounded-full bg-[#547832] flex items-center justify-center text-xs font-bold text-white overflow-hidden shrink-0">
                 {open.client.image
                   ? <img src={open.client.image} alt="" className="w-full h-full object-cover" />
-                  : `${open.client.name[0]}${open.client.lastName[0]}`
+                  : open.client.name[0]
                 }
               </div>
-              <p className="text-white text-sm font-semibold">{open.client.name} {open.client.lastName}</p>
+              <div>
+                <p className="text-white text-sm font-semibold leading-none">{open.client.name}</p>
+                {open.review && <Stars rating={open.review.rating} />}
+              </div>
             </div>
           </div>
 
-          {/* Image */}
           <div className="aspect-square w-full bg-black flex-shrink-0">
             <img src={open.imageUrl} alt="" className="w-full h-full object-cover" />
           </div>
 
-          {/* Comments */}
           <div className="flex-1 bg-white overflow-y-auto">
-            {open.comments.length === 0 && (
+            {open.review?.text && (
+              <div className="px-4 py-3 border-b border-[#F5F4E6]">
+                <p className="text-sm text-[#1E2A27]">{open.review.text}</p>
+              </div>
+            )}
+            {open.comments.length === 0 && !open.review?.text && (
               <p className="text-center text-[#A7A8A3] text-sm py-6">Sin comentarios aún</p>
             )}
             {open.comments.map(c => (
@@ -145,7 +161,6 @@ export default function PortfolioPage() {
             ))}
           </div>
 
-          {/* Comment input */}
           <div className="bg-white border-t border-[#E6E6E0] px-4 py-3 flex gap-3 items-center pb-safe">
             <input
               value={comment}

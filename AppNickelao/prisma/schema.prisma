@@ -151,6 +151,7 @@ model Review {
   clientId      String
   client        User        @relation(fields: [clientId], references: [id])
   text          String?
+  rating        Int         @default(5)
   pointsAwarded Int         @default(5)
   createdAt     DateTime    @default(now())
 

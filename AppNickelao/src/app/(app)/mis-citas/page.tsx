@@ -9,7 +9,7 @@ interface Appointment {
   endTime: string
   status: string
   service: { name: string; duration: number; price: number }
-  barber: { location: string; user: { name: string; lastName: string } }
+  barber: { location: string; user: { name: string } }
   review: null | { id: string }
 }
 
@@ -27,16 +27,30 @@ function formatTime(str: string) {
   return new Date(str).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
 }
 
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex justify-center gap-2 mb-4">
+      {[1, 2, 3, 4, 5].map(n => (
+        <button key={n} type="button" onClick={() => onChange(n)} className="text-4xl leading-none transition-transform active:scale-90">
+          {n <= value ? '★' : '☆'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function MisCitasPage() {
   const router = useRouter()
-  const [tab, setTab] = useState<'proximas' | 'historial'>('proximas')
+  const [tab, setTab] = useState<'proximas' | 'historial' | 'puntos'>('proximas')
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
+  const [points, setPoints] = useState<number>(0)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [reviewAppointment, setReviewAppointment] = useState<Appointment | null>(null)
   const [reviewText, setReviewText] = useState('')
+  const [reviewRating, setReviewRating] = useState(5)
   const [reviewImage, setReviewImage] = useState<File | null>(null)
   const [reviewPreview, setReviewPreview] = useState<string | null>(null)
   const [submittingReview, setSubmittingReview] = useState(false)
@@ -48,6 +62,10 @@ export default function MisCitasPage() {
       .then(r => r.json())
       .then(data => setAppointments(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false))
+    fetch('/api/users/me')
+      .then(r => r.json())
+      .then(u => { if (u.points !== undefined) setPoints(u.points) })
+      .catch(() => {})
   }, [])
 
   const upcoming = appointments.filter(a =>
@@ -79,43 +97,45 @@ export default function MisCitasPage() {
   }
 
   async function handleReviewSubmit() {
-    if (!reviewAppointment) return
+    if (!reviewAppointment || !reviewImage) return
     setSubmittingReview(true)
 
     let imageUrl: string | null = null
-
-    if (reviewImage) {
-      const formData = new FormData()
-      formData.append('file', reviewImage)
-      const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-      if (uploadRes.ok) {
-        const { url } = await uploadRes.json()
-        imageUrl = url
-      }
+    const formData = new FormData()
+    formData.append('file', reviewImage)
+    const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
+    if (uploadRes.ok) {
+      const { url } = await uploadRes.json()
+      imageUrl = url
     }
 
     const res = await fetch('/api/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ appointmentId: reviewAppointment.id, text: reviewText, imageUrl }),
+      body: JSON.stringify({ appointmentId: reviewAppointment.id, text: reviewText, imageUrl, rating: reviewRating }),
     })
 
     setSubmittingReview(false)
 
     if (res.ok) {
       setReviewSuccess(true)
+      setPoints(p => p + 5)
       setAppointments(prev => prev.map(a =>
         a.id === reviewAppointment.id ? { ...a, review: { id: 'submitted' } } : a
       ))
       setTimeout(() => {
         setReviewAppointment(null)
         setReviewText('')
+        setReviewRating(5)
         setReviewImage(null)
         setReviewPreview(null)
         setReviewSuccess(false)
       }, 1800)
     }
   }
+
+  const pointsToFree = Math.max(0, 100 - points)
+  const progress = Math.min(100, (points / 100) * 100)
 
   return (
     <div className="min-h-screen bg-[#F5F4E6]">
@@ -125,15 +145,19 @@ export default function MisCitasPage() {
 
       {/* Tabs */}
       <div className="flex bg-white border-b border-[#E6E6E0]">
-        {(['proximas', 'historial'] as const).map(t => (
+        {([
+          ['proximas', `Próximas (${upcoming.length})`],
+          ['historial', `Historial (${past.length})`],
+          ['puntos', 'NickPoints'],
+        ] as const).map(([t, label]) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 py-3.5 text-sm font-semibold transition-colors border-b-2 ${
+            className={`flex-1 py-3.5 text-xs font-semibold transition-colors border-b-2 ${
               tab === t ? 'border-[#547832] text-[#547832]' : 'border-transparent text-[#A7A8A3]'
             }`}
           >
-            {t === 'proximas' ? `Próximas (${upcoming.length})` : `Historial (${past.length})`}
+            {label}
           </button>
         ))}
       </div>
@@ -241,7 +265,7 @@ export default function MisCitasPage() {
 
                 {a.status === 'COMPLETED' && !a.review && (
                   <button
-                    onClick={() => setReviewAppointment(a)}
+                    onClick={() => { setReviewAppointment(a); setReviewRating(5) }}
                     className="w-full mt-2 bg-[#F2C230] text-[#1E2A27] font-bold py-2.5 rounded-xl text-sm"
                   >
                     Añadir reseña y foto · +5 pts ⭐
@@ -252,6 +276,49 @@ export default function MisCitasPage() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* NickPoints */}
+        {!loading && tab === 'puntos' && (
+          <div className="flex flex-col gap-4 pt-2">
+            <div className="bg-[#1E2A27] rounded-2xl p-5 text-center">
+              <p className="text-[#F2C230] text-xs font-semibold uppercase tracking-widest mb-1">Tus NickPoints</p>
+              <p className="text-[#F5F4E6] text-6xl font-bold">{points}</p>
+              <p className="text-[#A7A8A3] text-sm mt-1">de 100 para corte gratis</p>
+              <div className="mt-4 bg-white/10 rounded-full h-2.5 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#F2C230] transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              {points >= 100 ? (
+                <p className="text-[#F2C230] font-bold text-sm mt-3">🎉 ¡Tienes un corte gratis! Muestra esta pantalla en el local.</p>
+              ) : (
+                <p className="text-[#A7A8A3] text-xs mt-3">Te faltan <span className="text-[#F2C230] font-bold">{pointsToFree} puntos</span></p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-[#E6E6E0]">
+              <p className="font-bold text-[#1E2A27] mb-3">Cómo ganar puntos</p>
+              {[
+                { icon: '✂️', label: 'Reserva confirmada y asistida', pts: '+5' },
+                { icon: '📸', label: 'Reseña + foto del corte', pts: '+5' },
+                { icon: '🎁', label: 'Corte gratis al llegar a 100', pts: '100' },
+              ].map(item => (
+                <div key={item.label} className="flex items-center justify-between py-2.5 border-b border-[#F5F4E6] last:border-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{item.icon}</span>
+                    <p className="text-sm text-[#1E2A27]">{item.label}</p>
+                  </div>
+                  <span className="font-bold text-[#547832] text-sm">{item.pts}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-red-50 border border-red-100 rounded-2xl p-4">
+              <p className="text-xs text-red-600 font-medium">⚠️ No asistencia: pierdes todos tus puntos</p>
+            </div>
           </div>
         )}
       </div>
@@ -284,7 +351,7 @@ export default function MisCitasPage() {
       {/* Review modal */}
       {reviewAppointment && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end">
-          <div className="bg-white w-full rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto">
+          <div className="bg-white w-full rounded-t-3xl p-6 pb-10 max-h-[90vh] overflow-y-auto">
             <div className="w-10 h-1 bg-[#E6E6E0] rounded-full mx-auto mb-5" />
 
             {reviewSuccess ? (
@@ -296,7 +363,11 @@ export default function MisCitasPage() {
             ) : (
               <>
                 <h3 className="font-bold text-[#1E2A27] text-lg mb-1">Añadir reseña</h3>
-                <p className="text-[#A7A8A3] text-sm mb-5">{reviewAppointment.service.name} · {formatDate(reviewAppointment.startTime)}</p>
+                <p className="text-[#A7A8A3] text-sm mb-4">{reviewAppointment.service.name} · {formatDate(reviewAppointment.startTime)}</p>
+
+                {/* Stars */}
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#A7A8A3] text-center mb-2">Valoración</p>
+                <StarPicker value={reviewRating} onChange={setReviewRating} />
 
                 {/* Image picker */}
                 <button
@@ -313,7 +384,7 @@ export default function MisCitasPage() {
                         <path d="M21 15l-5-5L5 21"/>
                       </svg>
                       <p className="text-[#A7A8A3] text-sm">Añadir foto del corte</p>
-                      <p className="text-[#C8C9C4] text-xs mt-0.5">Toca para seleccionar</p>
+                      <p className="text-[#C8C9C4] text-xs mt-0.5">Obligatorio</p>
                     </>
                   )}
                 </button>
@@ -323,17 +394,17 @@ export default function MisCitasPage() {
                 <textarea
                   value={reviewText}
                   onChange={e => setReviewText(e.target.value)}
-                  placeholder="¿Cómo fue tu experiencia? (opcional)"
+                  placeholder="¿Cómo fue tu experiencia?"
                   rows={3}
                   className="w-full border border-[#E6E6E0] rounded-xl px-4 py-3 text-sm text-[#1E2A27] resize-none focus:outline-none focus:border-[#547832] mb-4"
                 />
 
                 <button
                   onClick={handleReviewSubmit}
-                  disabled={submittingReview}
-                  className="w-full bg-[#F2C230] text-[#1E2A27] font-bold py-4 rounded-2xl text-base disabled:opacity-50"
+                  disabled={submittingReview || !reviewImage}
+                  className="w-full bg-[#F2C230] text-[#1E2A27] font-bold py-4 rounded-2xl text-base disabled:opacity-40"
                 >
-                  {submittingReview ? 'Enviando…' : 'Enviar reseña · +5 pts ⭐'}
+                  {submittingReview ? 'Enviando…' : !reviewImage ? 'Añade una foto para continuar' : 'Enviar reseña · +5 pts ⭐'}
                 </button>
                 <button
                   onClick={() => setReviewAppointment(null)}

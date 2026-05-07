@@ -7,6 +7,7 @@ export async function GET() {
     orderBy: { createdAt: 'desc' },
     include: {
       client: { select: { name: true, image: true } },
+      review: { select: { rating: true, text: true } },
       comments: {
         orderBy: { createdAt: 'asc' },
         include: { user: { select: { name: true, image: true } } },
