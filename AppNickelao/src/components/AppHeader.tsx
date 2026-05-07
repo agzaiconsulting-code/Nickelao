@@ -13,14 +13,24 @@ const NAV_LINKS = [
   ['/#contacto', 'Contacto'],
 ]
 
+const SESSION_KEY = 'nic_session_user'
+
 export default function AppHeader() {
-  const [user, setUser] = useState<SessionUser | null>(null)
+  const [user, setUser] = useState<SessionUser | null>(() => {
+    if (typeof window === 'undefined') return null
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null') } catch { return null }
+  })
   const [mobileMenu, setMobileMenu] = useState(false)
 
   useEffect(() => {
     fetch('/api/auth/session')
       .then(r => r.json())
-      .then(data => { if (data?.user) setUser(data.user) })
+      .then(data => {
+        const u = data?.user ?? null
+        setUser(u)
+        if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u))
+        else localStorage.removeItem(SESSION_KEY)
+      })
       .catch(() => {})
   }, [])
 

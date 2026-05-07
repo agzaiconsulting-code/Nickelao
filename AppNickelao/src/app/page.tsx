@@ -9,13 +9,23 @@ import Image from 'next/image'
 type SessionUser = { id: string; name?: string | null; email?: string | null; image?: string | null; points?: number; role?: string }
 type CurrentSession = { user: SessionUser } | null
 
+const SESSION_KEY = 'nic_session_user'
+
 function useCurrentSession(): { session: CurrentSession; reload: () => void } {
-  const [session, setSession] = useState<CurrentSession>(null)
+  const [session, setSession] = useState<CurrentSession>(() => {
+    if (typeof window === 'undefined') return null
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null') } catch { return null }
+  })
   const [tick, setTick] = useState(0)
   useEffect(() => {
     fetch('/api/auth/session')
       .then(r => r.ok ? r.json() : null)
-      .then(data => setSession(data?.user ? (data as CurrentSession) : null))
+      .then(data => {
+        const s = data?.user ? (data as CurrentSession) : null
+        setSession(s)
+        if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s))
+        else localStorage.removeItem(SESSION_KEY)
+      })
       .catch(() => setSession(null))
   }, [tick])
   return { session, reload: () => setTick(t => t + 1) }
