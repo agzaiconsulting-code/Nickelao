@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { signIn, signOut } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useState, useEffect } from 'react'
+import ProfileModal from './ProfileModal'
 
 type SessionUser = { name?: string | null; image?: string | null; role?: string }
 
@@ -21,6 +22,7 @@ export default function AppHeader() {
     try { return JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null') } catch { return null }
   })
   const [mobileMenu, setMobileMenu] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
     fetch('/api/auth/session')
@@ -74,20 +76,16 @@ export default function AppHeader() {
             </>
           )}
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--green-dark)', flexShrink: 0 }}>
-                {user.image
-                  ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
-                  : <div style={{ width: '100%', height: '100%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700, fontSize: '0.9rem' }}>
-                      {user.name?.[0]?.toUpperCase() ?? '?'}
-                    </div>
-                }
-              </div>
-              <button onClick={() => signOut({ callbackUrl: '/' })}
-                style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.78rem', fontWeight: 600, borderRadius: 6, padding: '0.35rem 0.75rem', cursor: 'pointer' }}>
-                Salir
-              </button>
-            </div>
+            <button onClick={() => setProfileOpen(true)}
+              style={{ width: 38, height: 38, borderRadius: '50%', border: '2px solid var(--green-dark)', background: 'none', padding: 0, cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}
+              aria-label="Perfil">
+              {user.image
+                ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                : <div style={{ width: '100%', height: '100%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontSize: '0.9rem', fontWeight: 700 }}>
+                    {user.name?.[0]?.toUpperCase() ?? '?'}
+                  </div>
+              }
+            </button>
           ) : (
             <button onClick={() => signIn('google')}
               style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.45rem 1.25rem', borderRadius: 6, border: '1.5px solid var(--green-dark)', color: 'var(--green-dark)', background: 'transparent', cursor: 'pointer', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
@@ -127,19 +125,16 @@ export default function AppHeader() {
                 </button>
               ) : (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <button onClick={() => { setMobileMenu(false); setProfileOpen(true) }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'none', border: 'none', padding: '0.5rem 0', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--green-dark)', flexShrink: 0 }}>
                       {user.image
-                        ? <img src={user.image} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-dark)' }} referrerPolicy="no-referrer" />
+                        ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
                         : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{user.name?.[0]?.toUpperCase() ?? '?'}</div>
                       }
-                      <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{user.name}</span>
                     </div>
-                    <button onClick={() => { setMobileMenu(false); signOut({ callbackUrl: '/' }) }}
-                      style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>
-                      Salir
-                    </button>
-                  </div>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{user.name}</span>
+                  </button>
                   {user.role === 'CLIENT' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
                       {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
@@ -156,6 +151,8 @@ export default function AppHeader() {
           </div>
         </div>
       )}
+
+      {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
     </>
   )
 }
