@@ -799,6 +799,17 @@ export default function LandingPage() {
               Panel Admin
             </a>
           )}
+          {session?.user?.role === 'CLIENT' && (
+            <>
+              {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
+                <a key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
+                  {label}
+                </a>
+              ))}
+            </>
+          )}
           <ProfileButton onOpenAuth={openAuth} />
         </div>
         {/* Hamburguesa (solo móvil) */}
@@ -841,6 +852,15 @@ export default function LandingPage() {
                   </div>
                   <button onClick={() => { setMobileMenu(false); signOut({ callbackUrl: '/' }) }} style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>Salir</button>
                 </div>
+                {session.user.role === 'CLIENT' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.5rem' }}>
+                    {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
+                      <a key={href} href={href} onClick={() => setMobileMenu(false)} style={{ display: 'block', padding: '0.75rem 0', fontSize: '1rem', fontWeight: 500, color: 'var(--green-dark)', textDecoration: 'none', borderTop: '1px solid var(--cream-mid)' }}>
+                        {label}
+                      </a>
+                    ))}
+                  </div>
+                )}
               )}
             </div>
           </div>
