@@ -177,12 +177,6 @@ export default function MisCitasPage() {
             {upcoming.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-[#1E2A27] font-semibold">No tienes citas próximas</p>
-                <button
-                  onClick={() => router.push('/reservas')}
-                  className="mt-4 bg-[#F2C230] text-[#1E2A27] font-bold px-6 py-3 rounded-xl text-sm"
-                >
-                  Reservar cita
-                </button>
               </div>
             )}
             {upcoming.map(a => {
