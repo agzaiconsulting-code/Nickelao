@@ -746,12 +746,13 @@ export default function AdminPage() {
                 </div>
 
                 {timeRows.map(time => {
+                  const ROW_H = 52
                   const slotMin = timeToMin(time)
                   const isNow = isSameDay(selectedDate, today) &&
                     today.getHours() * 60 + today.getMinutes() >= slotMin &&
                     today.getHours() * 60 + today.getMinutes() < slotMin + 30
                   return (
-                    <div key={time} style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: '1px solid #eeeddf', background: isNow ? '#fffbea' : '#fff', minHeight: 52 }}>
+                    <div key={time} style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: '1px solid #eeeddf', background: isNow ? '#fffbea' : '#fff', minHeight: ROW_H }}>
                       <div style={{ padding: '0.65rem 0.4rem', borderRight: '1px solid #e0dfd0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                         <span style={{ fontSize: '0.7rem', fontWeight: 600, color: isNow ? '#c8960c' : '#A7A8A3' }}>{time}</span>
                       </div>
@@ -776,11 +777,16 @@ export default function AdminPage() {
                           return m >= timeToMin(isoToHHMM(block.startTime)) && m < timeToMin(isoToHHMM(block.endTime))
                         }) === time
 
+                        // Calculate pixel height from actual duration
+                        const apptH = appt ? Math.max((appt.service.duration / 30) * ROW_H - 4, 24) : 0
+                        const blockDurMin = block ? timeToMin(isoToHHMM(block.endTime)) - timeToMin(isoToHHMM(block.startTime)) : 0
+                        const blockH = block ? Math.max((blockDurMin / 30) * ROW_H - 4, 24) : 0
+
                         return (
-                          <div key={b.id} style={{ borderRight: '1px solid #e0dfd0', padding: '0.3rem 0.5rem', background: block ? 'repeating-linear-gradient(45deg,#f5f4e6,#f5f4e6 4px,#ede9d8 4px,#ede9d8 8px)' : undefined }}>
+                          <div key={b.id} style={{ position: 'relative', borderRight: '1px solid #e0dfd0', minHeight: ROW_H, background: block ? 'repeating-linear-gradient(45deg,#f5f4e6,#f5f4e6 4px,#ede9d8 4px,#ede9d8 8px)' : undefined, overflow: 'visible' }}>
                             {isFirstApptRow && appt ? (
                               <button onClick={() => setPopup(appt)}
-                                style={{ width: '100%', background: '#1E2A27', borderRadius: 8, padding: '0.5rem 0.7rem', border: 'none', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 4px rgba(30,42,39,0.15)' }}
+                                style={{ position: 'absolute', top: 2, left: 4, right: 4, height: apptH, zIndex: 2, background: '#1E2A27', borderRadius: 8, padding: '0.4rem 0.6rem', border: 'none', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 4px rgba(30,42,39,0.15)', overflow: 'hidden' }}
                                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.82')}
                                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#F5F4E6', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -791,7 +797,7 @@ export default function AdminPage() {
                                 </div>
                               </button>
                             ) : isFirstBlockRow && block ? (
-                              <div style={{ width: '100%', background: 'rgba(160,160,150,0.18)', borderRadius: 8, padding: '0.4rem 0.6rem', border: '1.5px solid #c8c9c4', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.4rem' }}>
+                              <div style={{ position: 'absolute', top: 2, left: 4, right: 4, height: blockH, zIndex: 2, background: 'rgba(160,160,150,0.18)', borderRadius: 8, padding: '0.4rem 0.6rem', border: '1.5px solid #c8c9c4', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.4rem', overflow: 'hidden' }}>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#A7A8A3' }}>🔒 Bloqueado</div>
                                   {block.reason && <div style={{ fontSize: '0.65rem', color: '#A7A8A3', marginTop: '0.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{block.reason}</div>}
@@ -809,7 +815,7 @@ export default function AdminPage() {
                               </div>
                             ) : !appt && !block ? (
                               <button onClick={() => setSlotModal({ time, barberId: b.id, barberName: b.name, date: selectedDate })}
-                                style={{ width: '100%', height: '100%', minHeight: 44, border: '1.5px dashed transparent', borderRadius: 8, background: 'transparent', cursor: 'pointer' }}
+                                style={{ position: 'absolute', inset: 0, border: '1.5px dashed transparent', borderRadius: 8, background: 'transparent', cursor: 'pointer' }}
                                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#e0dfd0'; e.currentTarget.style.background = '#fafaf5' }}
                                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'transparent' }}>
                               </button>
