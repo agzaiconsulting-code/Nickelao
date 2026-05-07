@@ -334,9 +334,11 @@ function SlotModal({ time, barberId, barberName, date, onClose, onSuccess }: {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <select value={duration} onChange={e => setDuration(e.target.value)}
               style={{ padding: '0.6rem 0.85rem', borderRadius: 8, border: '1.5px solid #e0dfd0', fontSize: '0.88rem', background: '#fff', outline: 'none' }}>
+              <option value="15">15 min</option>
               <option value="30">30 min</option>
               <option value="45">45 min</option>
               <option value="60">1 hora</option>
+              <option value="90">1 hora 30 min</option>
               <option value="120">2 horas</option>
             </select>
             <input value={reason} onChange={e => setReason(e.target.value)} placeholder="Vacaciones, formación, etc."
