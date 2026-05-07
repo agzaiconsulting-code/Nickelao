@@ -842,25 +842,27 @@ export default function LandingPage() {
               {!session?.user ? (
                 <button onClick={() => { setMobileMenu(false); openAuth() }} style={{ width: '100%', padding: '0.75rem', background: 'var(--green-dark)', border: 'none', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Acceder / Registrarse</button>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {session.user.image
-                      ? <img src={session.user.image} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-dark)' }} referrerPolicy="no-referrer" />
-                      : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{session.user.name?.[0]?.toUpperCase() ?? '?'}</div>
-                    }
-                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{session.user.name}</span>
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      {session.user.image
+                        ? <img src={session.user.image} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-dark)' }} referrerPolicy="no-referrer" />
+                        : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{session.user.name?.[0]?.toUpperCase() ?? '?'}</div>
+                      }
+                      <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{session.user.name}</span>
+                    </div>
+                    <button onClick={() => { setMobileMenu(false); signOut({ callbackUrl: '/' }) }} style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>Salir</button>
                   </div>
-                  <button onClick={() => { setMobileMenu(false); signOut({ callbackUrl: '/' }) }} style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>Salir</button>
-                </div>
-                {session.user.role === 'CLIENT' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.5rem' }}>
-                    {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                      <a key={href} href={href} onClick={() => setMobileMenu(false)} style={{ display: 'block', padding: '0.75rem 0', fontSize: '1rem', fontWeight: 500, color: 'var(--green-dark)', textDecoration: 'none', borderTop: '1px solid var(--cream-mid)' }}>
-                        {label}
-                      </a>
-                    ))}
-                  </div>
-                )}
+                  {session.user.role === 'CLIENT' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
+                      {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
+                        <a key={href} href={href} onClick={() => setMobileMenu(false)} style={{ display: 'block', padding: '0.75rem 0', fontSize: '1rem', fontWeight: 500, color: 'var(--green-dark)', textDecoration: 'none', borderTop: '1px solid var(--cream-mid)' }}>
+                          {label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
