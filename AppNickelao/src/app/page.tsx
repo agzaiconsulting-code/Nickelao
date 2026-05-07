@@ -143,6 +143,7 @@ function ServicesSection() {
 export default function LandingPage() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', msg: '' })
   const [contactSent, setContactSent] = useState(false)
+  const [contactError, setContactError] = useState('')
   const [mobileMenu, setMobileMenu] = useState(false)
   const [aboutIdx, setAboutIdx] = useState(0)
   const [aboutLightbox, setAboutLightbox] = useState(false)
@@ -161,11 +162,22 @@ export default function LandingPage() {
     return () => window.removeEventListener('keydown', onKey)
   }, [aboutLightbox, aboutPrev, aboutNext])
 
-  function handleContact(e: React.FormEvent) {
+  async function handleContact(e: React.FormEvent) {
     e.preventDefault()
-    setContactSent(true)
-    setTimeout(() => setContactSent(false), 3000)
-    setContactForm({ name: '', email: '', msg: '' })
+    setContactError('')
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(contactForm),
+    })
+    if (res.ok) {
+      setContactSent(true)
+      setTimeout(() => setContactSent(false), 3000)
+      setContactForm({ name: '', email: '', msg: '' })
+    } else {
+      const data = await res.json().catch(() => ({}))
+      setContactError(data.error || 'Error al enviar. Inténtalo de nuevo.')
+    }
   }
 
   return (
@@ -410,6 +422,7 @@ export default function LandingPage() {
               <button type="submit" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--green-dark)', color: 'var(--cream)', cursor: 'pointer', alignSelf: 'flex-start', transition: 'all 0.2s' }}>
                 {contactSent ? '✓ Mensaje enviado' : 'Enviar mensaje'}
               </button>
+              {contactError && <p style={{ fontSize: '0.82rem', color: '#c0392b', margin: 0 }}>{contactError}</p>}
             </form>
           </div>
         </div>
