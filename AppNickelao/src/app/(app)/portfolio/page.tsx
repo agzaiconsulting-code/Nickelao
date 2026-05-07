@@ -66,7 +66,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4E6]">
-      <div className="bg-[#1E2A27] px-5 pt-14 pb-5">
+      <div className="bg-[#1E2A27] px-5 pt-6 pb-5">
         <h1 className="text-[#F5F4E6] text-2xl font-bold">Portfolio</h1>
         <p className="text-[#A7A8A3] text-sm mt-1">Trabajos de nuestros clientes</p>
       </div>
