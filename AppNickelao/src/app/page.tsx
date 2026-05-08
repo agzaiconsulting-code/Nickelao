@@ -1022,14 +1022,14 @@ export default function LandingPage() {
             <div>
               <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.3rem', color: 'var(--green-dark)', marginBottom: '1.5rem' }}>Encuéntranos</h3>
               {[
-                { icon: <IconLocation />, label: 'Dirección', value: 'Foz - Av. da Mariña, 26 · Mondoñedo - Praza da Catedral, 13' },
+                { icon: <IconLocation />, label: 'Dirección', value: 'Foz - Av. da Mariña, 26\nMondoñedo - Praza da Catedral, 13' },
                 { icon: <IconMail />, label: 'Email', value: 'nickelaobarbershop@gmail.com' },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.9rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: 38, height: 38, borderRadius: 8, background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.icon}</div>
                   <div>
                     <div style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-light)', marginBottom: '0.2rem' }}>{item.label}</div>
-                    <div style={{ fontSize: '0.9rem', color: 'var(--text-dark)', fontWeight: 500 }}>{item.value}</div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-dark)', fontWeight: 500, whiteSpace: 'pre-line' }}>{item.value}</div>
                   </div>
                 </div>
               ))}
