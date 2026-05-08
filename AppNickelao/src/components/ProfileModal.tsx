@@ -60,7 +60,7 @@ export default function ProfileModal({ onClose, onSaved }: Props) {
   const initials = (name || '?')[0]?.toUpperCase()
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}
+    <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(460px, 94vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
@@ -71,7 +71,7 @@ export default function ProfileModal({ onClose, onSaved }: Props) {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.75rem', gap: '0.75rem' }}>
           <div style={{ position: 'relative', width: 80, height: 80 }}>
             {imageUrl
-              ? <img src={imageUrl} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--green-dark)' }} referrerPolicy="no-referrer" />
+              ? <img src={imageUrl} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--green-dark)' }} />
               : <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontSize: '1.8rem', fontWeight: 700 }}>{initials}</div>
             }
             {uploading && (
@@ -113,7 +113,7 @@ export default function ProfileModal({ onClose, onSaved }: Props) {
           </div>
         </form>
 
-        <button onClick={() => signOut({ callbackUrl: '/' })}
+        <button onClick={() => signOut()}
           style={{ width: '100%', marginTop: '1.25rem', padding: '0.65rem', borderRadius: 8, border: '1.5px solid #d4d3c4', background: 'transparent', color: 'var(--text-light)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
           Cerrar sesión
         </button>

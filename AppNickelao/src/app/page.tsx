@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useLayoutEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { signIn, signOut } from 'next-auth/react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 // ── SESSION HOOK ──────────────────────────────────────────────────────────────
 
@@ -14,7 +15,7 @@ const SESSION_KEY = 'nic_session_user'
 function useCurrentSession(): { session: CurrentSession; reload: () => void } {
   const [session, setSession] = useState<CurrentSession>(null)
   const [tick, setTick] = useState(0)
-  useLayoutEffect(() => {
+  useEffect(() => {
     try {
       const cached = JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null')
       if (cached) setSession(cached)
@@ -138,7 +139,7 @@ function AuthModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(420px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)', textAlign: 'center' }}>
@@ -194,7 +195,7 @@ function CompleteProfileModal({ name, onDone }: { name: string; onDone: () => vo
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(440px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)' }}>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green-dark)', marginBottom: '0.4rem' }}>
           Un último paso
@@ -270,7 +271,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
   const initials = (name || session?.user?.name || '?')[0]?.toUpperCase()
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(460px, 94vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
@@ -282,7 +283,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.75rem', gap: '0.75rem' }}>
           <div style={{ position: 'relative', width: 80, height: 80 }}>
             {avatarSrc
-              ? <img src={avatarSrc} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--green-dark)' }} referrerPolicy="no-referrer" />
+              ? <img src={avatarSrc} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--green-dark)' }} />
               : <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontSize: '1.8rem', fontWeight: 700 }}>{initials}</div>
             }
             {uploading && (
@@ -324,7 +325,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
           </div>
         </form>
 
-        <button onClick={() => signOut({ callbackUrl: '/' })}
+        <button onClick={() => signOut()}
           style={{ width: '100%', marginTop: '1.25rem', padding: '0.65rem', borderRadius: 8, border: '1.5px solid #d4d3c4', background: 'transparent', color: 'var(--text-light)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
           Cerrar sesión
         </button>
@@ -356,7 +357,7 @@ function ProfileButton({ onOpenAuth }: { onOpenAuth: () => void }) {
         style={{ width: 38, height: 38, borderRadius: '50%', border: '2px solid var(--green-dark)', background: 'none', padding: 0, cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}
         aria-label="Perfil">
         {session.user.image
-          ? <img src={session.user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+          ? <img src={session.user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : <div style={{ width: '100%', height: '100%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontSize: '0.9rem', fontWeight: 700 }}>
               {session.user.name?.[0]?.toUpperCase() ?? '?'}
             </div>
@@ -733,6 +734,7 @@ export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false)
   const [showCompleteProfile, setShowCompleteProfile] = useState(false)
   const [mobileMenu, setMobileMenu] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [aboutIdx, setAboutIdx] = useState(0)
   const [aboutLightbox, setAboutLightbox] = useState(false)
 
@@ -804,25 +806,29 @@ export default function LandingPage() {
           ))}
         </nav>
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', alignItems: 'center' }}>
-          {session?.user?.role && ['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(session.user.role) && (
-            <a href="/admin" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
-              Panel Admin
-            </a>
-          )}
-          {session?.user?.role === 'CLIENT' && (
-            <>
-              {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                <a key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
-                  {label}
-                </a>
-              ))}
-            </>
-          )}
-          <ProfileButton onOpenAuth={openAuth} />
+          <div className="header-desktop-links" style={{ gap: '0.6rem', alignItems: 'center' }}>
+            {session?.user?.role && ['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(session.user.role) && (
+              <a href="/admin" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
+                Panel Admin
+              </a>
+            )}
+            {session?.user?.role === 'CLIENT' && (
+              <>
+                {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
+                  <a key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
+                    {label}
+                  </a>
+                ))}
+              </>
+            )}
+          </div>
+          <div className="header-profile-btn" style={{ display: 'flex', alignItems: 'center' }}>
+            <ProfileButton onOpenAuth={openAuth} />
+          </div>
         </div>
         {/* Hamburguesa (solo móvil) */}
         <button
@@ -850,31 +856,35 @@ export default function LandingPage() {
                 {label}
               </a>
             ))}
+            <div style={{ borderBottom: '2.5px solid #c8c9c4', margin: '0 0 0.25rem' }} />
+            {session?.user?.role === 'CLIENT' && (
+              [['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
+                <Link key={href} href={href} onClick={() => setMobileMenu(false)}
+                  style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
+                  {label}
+                </Link>
+              ))
+            )}
+            {session?.user?.role && ['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(session.user.role) && (
+              <Link href="/admin" onClick={() => setMobileMenu(false)}
+                style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
+                Panel Admin
+              </Link>
+            )}
             <div style={{ margin: '1rem 2rem 0.25rem' }}>
               {!session?.user ? (
                 <button onClick={() => { setMobileMenu(false); openAuth() }} style={{ width: '100%', padding: '0.75rem', background: 'var(--green-dark)', border: 'none', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Acceder / Registrarse</button>
               ) : (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      {session.user.image
-                        ? <img src={session.user.image} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-dark)' }} referrerPolicy="no-referrer" />
-                        : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{session.user.name?.[0]?.toUpperCase() ?? '?'}</div>
-                      }
-                      <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{session.user.name}</span>
-                    </div>
-                    <button onClick={() => { setMobileMenu(false); signOut({ callbackUrl: '/' }) }} style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>Salir</button>
-                  </div>
-                  {session.user.role === 'CLIENT' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
-                      {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                        <a key={href} href={href} onClick={() => setMobileMenu(false)} style={{ display: 'block', padding: '0.75rem 0', fontSize: '1rem', fontWeight: 500, color: 'var(--green-dark)', textDecoration: 'none', borderTop: '1px solid var(--cream-mid)' }}>
-                          {label}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+                  <button onClick={() => { setMobileMenu(false); setProfileOpen(true) }} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+                    {session.user.image
+                      ? <img src={session.user.image} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-dark)' }} />
+                      : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{session.user.name?.[0]?.toUpperCase() ?? '?'}</div>
+                    }
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{session.user.name}</span>
+                  </button>
+                  <button onClick={() => { setMobileMenu(false); signOut() }} style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>Salir</button>
+                </div>
               )}
             </div>
           </div>
@@ -1120,6 +1130,7 @@ export default function LandingPage() {
       </footer>
 
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+      {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
       {showCompleteProfile && session?.user?.name && (
         <CompleteProfileModal
           name={session.user.name}

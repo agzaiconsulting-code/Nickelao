@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import AppHeader from '@/components/AppHeader'
+import Link from 'next/link'
 
 type BarberInfo = { id: string; name: string }
-type ApptData = { id: string; barberId: string; startTime: string; endTime: string; client: { name: string; phone: string }; barber: string; service: { name: string; duration: number } }
+type ApptData = { id: string; barberId: string; startTime: string; endTime: string; client: { name: string; phone: string }; barber: string; service: { name: string; duration: number }; autoAssigned: boolean }
 type BlockData = { id: string; barberId: string; startTime: string; endTime: string; reason: string | null }
 type DbService = { id: string; name: string; duration: number; price: number; category: string }
 type UserResult = { id: string; name: string | null; phone: string | null; email: string; isBlocked: boolean; blockedReason: string | null; blockedAt: string | null }
@@ -38,16 +40,16 @@ function isSameDay(a: Date, b: Date) {
 }
 
 function getTimeRows(date: Date): string[] {
-  const dow = date.getDay()
-  if (dow === 0) return []
+  if (date.getDay() === 0) return []
   const rows: string[] = []
-  if (dow === 6) {
-    for (let m = 540; m < 780; m += 30) rows.push(minToTime(m))
-  } else {
-    for (let m = 570; m < 810; m += 30)  rows.push(minToTime(m))
-    for (let m = 960; m < 1230; m += 30) rows.push(minToTime(m))
-  }
+  for (let m = 480; m < 1320; m += 15) rows.push(minToTime(m))
   return rows
+}
+
+function isWorkingSlot(slotMin: number, dow: number): boolean {
+  if (dow === 0) return false
+  if (dow === 6) return slotMin >= 540 && slotMin < 780
+  return (slotMin >= 570 && slotMin < 810) || (slotMin >= 960 && slotMin < 1230)
 }
 
 function toDateStr(d: Date) {
@@ -139,7 +141,7 @@ function ApptPopup({ appt, onClose, onDeleted }: { appt: ApptData; onClose: () =
 
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()}
-      style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(3px)' }}>
+      className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: '2rem', width: 'min(400px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'DM Sans', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', color: '#1E2A27', margin: 0 }}>Detalle de cita</h3>
@@ -150,7 +152,7 @@ function ApptPopup({ appt, onClose, onDeleted }: { appt: ApptData; onClose: () =
             { label: 'Cliente',   value: appt.client.name },
             { label: 'Teléfono', value: appt.client.phone || '—' },
             { label: 'Servicio', value: appt.service.name },
-            { label: 'Peluquero', value: appt.barber },
+            { label: 'Peluquero', value: appt.autoAssigned ? `Autoasignación (${appt.barber})` : appt.barber },
             { label: 'Hora',     value: `${startHHMM} – ${endHHMM}` },
             { label: 'Duración', value: `${appt.service.duration} min` },
           ].map(({ label, value }) => (
@@ -270,7 +272,7 @@ function SlotModal({ time, barberId, barberName, date, onClose, onSuccess }: {
 
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()}
-      style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(3px)' }}>
+      className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(440px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'DM Sans', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <div>
@@ -291,6 +293,13 @@ function SlotModal({ time, barberId, barberName, date, onClose, onSuccess }: {
 
         {tab === 'reservar' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.85rem', background: '#f5f4e6', borderRadius: 8, fontSize: '0.85rem' }}>
+              <span style={{ color: '#A7A8A3', fontWeight: 500 }}>Peluquero:</span>
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#1E2A27', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F2C230', fontSize: '0.7rem', fontWeight: 700 }}>
+                {barberName[0]}
+              </div>
+              <span style={{ fontWeight: 700, color: '#1E2A27' }}>{barberName}</span>
+            </div>
             <input
               value={query}
               onChange={e => { setQuery(e.target.value); setSelectedUser(null) }}
@@ -383,7 +392,7 @@ function BlockClientModal({ onClose, onSuccess }: { onClose: () => void; onSucce
 
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()}
-      style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(3px)' }}>
+      className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(420px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'DM Sans', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', color: '#1E2A27', margin: 0 }}>Bloquear cliente</h3>
@@ -569,7 +578,7 @@ function ConfigSection({ role }: { role: string }) {
 
 export default function AdminPage() {
   const router = useRouter()
-  const [session, setSession] = useState<{ user: { name?: string | null; role?: string } } | null>(null)
+  const [session, setSession] = useState<{ user: { name?: string | null; image?: string | null; role?: string } } | null>(null)
   const [activeSection, setActiveSection] = useState<'calendario' | 'bloqueados' | 'configuracion'>('calendario')
   const [local, setLocal] = useState('Foz')
   const [today] = useState(() => new Date())
@@ -587,33 +596,36 @@ export default function AdminPage() {
   const monthBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    fetch('/api/auth/session')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (!data?.user) { router.push('/'); return }
-        if (!['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(data.user.role)) { router.push('/'); return }
-        setSession(data)
-      })
-      .catch(() => router.push('/'))
+    // Auth check and initial calendar fetch in parallel
+    const calFetch = selectedDate.getDay() !== 0
+      ? fetch(`/api/admin/appointments?date=${toDateStr(selectedDate)}&location=${LOCATION_MAP[local]}`)
+          .then(r => r.ok ? r.json() : { barbers: [], appointments: [], blocks: [] })
+      : Promise.resolve({ barbers: [], appointments: [], blocks: [] })
+
+    Promise.all([
+      fetch('/api/auth/session').then(r => r.ok ? r.json() : null).catch(() => null),
+      calFetch,
+    ]).then(([sessionData, calData]) => {
+      if (!sessionData?.user) { router.push('/'); return }
+      if (!['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(sessionData.user.role)) { router.push('/'); return }
+      setSession(sessionData)
+      setBarbers(calData.barbers ?? [])
+      setAppointments(calData.appointments ?? [])
+      setBlocks(calData.blocks ?? [])
+      setLoading(false)
+    }).catch(() => router.push('/'))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
 
   useEffect(() => {
-    if (!session || activeSection !== 'calendario') return
+    if (activeSection !== 'calendario') return
     if (selectedDate.getDay() === 0) { setBarbers([]); setAppointments([]); setBlocks([]); return }
     setLoading(true)
     fetch(`/api/admin/appointments?date=${toDateStr(selectedDate)}&location=${LOCATION_MAP[local]}`)
       .then(r => r.ok ? r.json() : { barbers: [], appointments: [], blocks: [] })
       .then(data => { setBarbers(data.barbers ?? []); setAppointments(data.appointments ?? []); setBlocks(data.blocks ?? []) })
       .finally(() => setLoading(false))
-  }, [session, selectedDate, local, calVersion, activeSection])
-
-  if (!session) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#F5F4E6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", color: '#A7A8A3' }}>Cargando…</span>
-      </div>
-    )
-  }
+  }, [selectedDate, local, calVersion, activeSection])
 
   const isSunday   = selectedDate.getDay() === 0
   const isSaturday = selectedDate.getDay() === 6
@@ -641,45 +653,28 @@ export default function AdminPage() {
     { key: 'configuracion', label: 'Configuración' },
   ]
 
+  const adminMobileItems = tabs.map(t => ({
+    label: t.label,
+    onClick: () => setActiveSection(t.key),
+    active: activeSection === t.key,
+  }))
+
   return (
     <div style={{ minHeight: '100vh', background: '#F5F4E6', fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* Header */}
-      <header style={{ background: '#1E2A27', padding: '0 2rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 2px 12px rgba(16,26,22,0.2)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', fontWeight: 700, color: '#F5F4E6' }}>Nickelao — Admin</span>
-          <span style={{ fontSize: '0.68rem', fontWeight: 600, padding: '0.2rem 0.65rem', borderRadius: 100, background: 'rgba(242,194,48,0.18)', color: '#F2C230', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            {session.user.role}
-          </span>
-        </div>
+      <AppHeader
+        initialUser={session ? { name: session.user.name, image: session.user.image, role: session.user.role } : null}
+        mobileMenuExtra={adminMobileItems}
+      />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          {tabs.map(t => (
-            <button key={t.key} onClick={() => setActiveSection(t.key)}
-              style={{ padding: '0.4rem 1rem', borderRadius: 6, border: 'none', background: activeSection === t.key ? 'rgba(242,194,48,0.18)' : 'transparent', color: activeSection === t.key ? '#F2C230' : 'rgba(255,255,255,0.6)', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {activeSection === 'calendario' && ['Foz', 'Mondoñedo'].map(l => (
-            <button key={l} onClick={() => setLocal(l)}
-              style={{ padding: '0.35rem 0.9rem', borderRadius: 6, border: '1.5px solid', borderColor: local === l ? '#F2C230' : 'rgba(255,255,255,0.2)', background: local === l ? 'rgba(242,194,48,0.15)' : 'transparent', color: local === l ? '#F2C230' : 'rgba(255,255,255,0.6)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
-              {l}
-            </button>
-          ))}
-          <a href="/" style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', marginLeft: '0.75rem' }}>← Volver</a>
-        </div>
-      </header>
 
       {/* Calendario section */}
       {activeSection === 'calendario' && (
-        <div style={{ height: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="admin-cal-wrap" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
           {/* Day strip */}
           <div style={{ background: '#fff', borderBottom: '1px solid #e0dfd0', padding: '0.75rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 160 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <button onClick={prevWeek}
                 style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#f0efe1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1E2A27" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
@@ -712,18 +707,18 @@ export default function AdminPage() {
               })}
             </div>
 
-            <div style={{ textAlign: 'right', minWidth: 160 }}>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '0.92rem', fontWeight: 700, color: '#1E2A27' }}>
-                {DAY_SHORT[selectedDate.getDay()]} {selectedDate.getDate()} de {MONTHS_ES[selectedDate.getMonth()]}
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#A7A8A3', marginTop: '0.05rem' }}>
-                {isSunday ? 'Cerrado' : isSaturday ? '09:00 – 13:00' : '09:30–13:30 · 16:00–20:30'} · {local}
-              </div>
+            <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+              {['Foz', 'Mondoñedo'].map(l => (
+                <button key={l} onClick={() => setLocal(l)}
+                  style={{ padding: '0.35rem 0.9rem', borderRadius: 6, border: '1.5px solid', borderColor: local === l ? '#1E2A27' : '#d4d3c4', background: local === l ? '#1E2A27' : 'transparent', color: local === l ? '#F5F4E6' : '#A7A8A3', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+                  {l}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Schedule */}
-          <main style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
+          <main style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', padding: '1rem 1.25rem 1.25rem' }}>
             {isSunday ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60%', flexDirection: 'column', gap: '0.5rem' }}>
                 <div style={{ fontSize: '2.5rem' }}>🔒</div>
@@ -734,7 +729,7 @@ export default function AdminPage() {
                 <span style={{ color: '#A7A8A3', fontSize: '0.9rem' }}>Cargando citas…</span>
               </div>
             ) : (
-              <div style={{ minWidth: barbers.length * 200 + 60 }}>
+              <div style={{ minWidth: barbers.length * 200 + 60, borderRadius: 12, overflow: 'hidden', border: '1px solid #e0dfd0', boxShadow: '0 2px 8px rgba(30,42,39,0.06)' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: '2px solid #e0dfd0', background: '#fafaf5', position: 'sticky', top: 0, zIndex: 9 }}>
                   <div style={{ borderRight: '1px solid #e0dfd0' }} />
                   {barbers.map(b => (
@@ -748,15 +743,17 @@ export default function AdminPage() {
                 </div>
 
                 {timeRows.map(time => {
-                  const ROW_H = 52
+                  const ROW_H = 26
                   const slotMin = timeToMin(time)
                   const isNow = isSameDay(selectedDate, today) &&
                     today.getHours() * 60 + today.getMinutes() >= slotMin &&
-                    today.getHours() * 60 + today.getMinutes() < slotMin + 30
+                    today.getHours() * 60 + today.getMinutes() < slotMin + 15
+                  const showLabel = slotMin % 30 === 0
+                  const working = isWorkingSlot(slotMin, selectedDate.getDay())
                   return (
-                    <div key={time} style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: '1px solid #eeeddf', background: isNow ? '#fffbea' : '#fff', minHeight: ROW_H }}>
-                      <div style={{ padding: '0.65rem 0.4rem', borderRight: '1px solid #e0dfd0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                        <span style={{ fontSize: '0.7rem', fontWeight: 600, color: isNow ? '#c8960c' : '#A7A8A3' }}>{time}</span>
+                    <div key={time} style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: showLabel ? '1px solid #eeeddf' : '1px solid #f5f4ee', background: !working ? '#f0efe6' : isNow ? '#fffbea' : '#fff', minHeight: ROW_H }}>
+                      <div style={{ padding: '0.25rem 0.4rem', borderRight: '1px solid #e0dfd0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                        {showLabel && <span style={{ fontSize: '0.7rem', fontWeight: 600, color: isNow ? '#c8960c' : '#A7A8A3' }}>{time}</span>}
                       </div>
                       {barbers.map(b => {
                         const appt = barberAppts[b.id]?.find(a => {
@@ -780,13 +777,13 @@ export default function AdminPage() {
                         }) === time
 
                         // Calculate pixel height from actual duration
-                        const apptH = appt ? Math.max((appt.service.duration / 30) * ROW_H - 4, 24) : 0
+                        const apptH = appt ? Math.max((appt.service.duration / 15) * ROW_H - 4, 20) : 0
                         const blockDurMin = block ? timeToMin(isoToHHMM(block.endTime)) - timeToMin(isoToHHMM(block.startTime)) : 0
-                        const blockH = block ? Math.max((blockDurMin / 30) * ROW_H - 4, 24) : 0
+                        const blockH = block ? Math.max((blockDurMin / 15) * ROW_H - 4, 20) : 0
 
                         return (
-                          <div key={b.id} style={{ position: 'relative', borderRight: '1px solid #e0dfd0', minHeight: ROW_H, background: block ? 'repeating-linear-gradient(45deg,#f5f4e6,#f5f4e6 4px,#ede9d8 4px,#ede9d8 8px)' : undefined, overflow: 'visible' }}>
-                            {isFirstApptRow && appt ? (
+                          <div key={b.id} style={{ position: 'relative', borderRight: '1px solid #e0dfd0', minHeight: ROW_H, background: !working ? 'repeating-linear-gradient(135deg,#ecebd9,#ecebd9 4px,#e4e3d2 4px,#e4e3d2 8px)' : block ? 'repeating-linear-gradient(45deg,#f5f4e6,#f5f4e6 4px,#ede9d8 4px,#ede9d8 8px)' : undefined, overflow: 'visible' }}>
+                            {!working ? null : isFirstApptRow && appt ? (
                               <button onClick={() => setPopup(appt)}
                                 style={{ position: 'absolute', top: 2, left: 4, right: 4, height: apptH, zIndex: 2, background: '#1E2A27', borderRadius: 8, padding: '0.4rem 0.6rem', border: 'none', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 4px rgba(30,42,39,0.15)', overflow: 'hidden' }}
                                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.82')}
@@ -834,8 +831,8 @@ export default function AdminPage() {
         </div>
       )}
 
-      {activeSection === 'bloqueados' && <BlockedSection />}
-      {activeSection === 'configuracion' && <ConfigSection role={session.user.role ?? ''} />}
+      <div style={{ display: activeSection === 'bloqueados' ? undefined : 'none' }}><BlockedSection /></div>
+      <div style={{ display: activeSection === 'configuracion' ? undefined : 'none' }}><ConfigSection role={session?.user.role ?? ''} /></div>
 
       {showMonthPicker && (
         <MonthPicker

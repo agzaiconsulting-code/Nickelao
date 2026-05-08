@@ -7,6 +7,7 @@ import { useState } from 'react'
 import ProfileModal from './ProfileModal'
 
 type SessionUser = { name?: string | null; image?: string | null; role?: string }
+type MobileMenuExtra = { label: string; onClick: () => void; active?: boolean }
 
 const NAV_LINKS = [
   ['/#reservas', 'Reserva'],
@@ -15,8 +16,8 @@ const NAV_LINKS = [
   ['/#contacto', 'Contacto'],
 ]
 
-export default function AppHeader({ initialUser }: { initialUser?: SessionUser | null }) {
-  const [user] = useState<SessionUser | null>(initialUser ?? null)
+export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUser?: SessionUser | null; mobileMenuExtra?: MobileMenuExtra[] }) {
+  const user = initialUser ?? null
   const [mobileMenu, setMobileMenu] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
 
@@ -42,22 +43,31 @@ export default function AppHeader({ initialUser }: { initialUser?: SessionUser |
 
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', alignItems: 'center' }}>
           <div className="header-desktop-links" style={{ gap: '0.6rem', alignItems: 'center' }}>
-            {isBarber && (
-              <Link href="/admin" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
-                Panel Admin
-              </Link>
-            )}
-            {user?.role === 'CLIENT' && (
+            {mobileMenuExtra ? (
+              mobileMenuExtra.map(item => (
+                <button key={item.label} onClick={item.onClick}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: 'none', background: item.active ? 'rgba(30,42,39,0.1)' : 'transparent', color: item.active ? 'var(--green-dark)' : 'var(--text-mid)', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s' }}>
+                  {item.label}
+                </button>
+              ))
+            ) : (
               <>
-                {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                  <Link key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
-                    {label}
+                {isBarber && (
+                  <Link href="/admin" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
+                    Panel Admin
                   </Link>
-                ))}
+                )}
+                {user?.role === 'CLIENT' && (
+                  [['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
+                    <Link key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
+                      {label}
+                    </Link>
+                  ))
+                )}
               </>
             )}
           </div>
@@ -67,7 +77,7 @@ export default function AppHeader({ initialUser }: { initialUser?: SessionUser |
                 style={{ width: 38, height: 38, borderRadius: '50%', border: '2px solid var(--green-dark)', background: 'none', padding: 0, cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}
                 aria-label="Perfil">
                 {user.image
-                  ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                  ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <div style={{ width: '100%', height: '100%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontSize: '0.9rem', fontWeight: 700 }}>
                       {user.name?.[0]?.toUpperCase() ?? '?'}
                     </div>
@@ -105,6 +115,7 @@ export default function AppHeader({ initialUser }: { initialUser?: SessionUser |
                 {label}
               </Link>
             ))}
+            <div style={{ borderBottom: '2.5px solid #c8c9c4', margin: '0 0 0.25rem' }} />
             {user?.role === 'CLIENT' && (
               <>
                 {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
@@ -115,11 +126,20 @@ export default function AppHeader({ initialUser }: { initialUser?: SessionUser |
                 ))}
               </>
             )}
-            {isBarber && (
-              <Link href="/admin" onClick={() => setMobileMenu(false)}
-                style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
-                Panel Admin
-              </Link>
+            {mobileMenuExtra ? (
+              mobileMenuExtra.map(item => (
+                <button key={item.label} onClick={() => { setMobileMenu(false); item.onClick() }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', background: item.active ? 'var(--sage-light)' : 'none', border: 'none', borderBottom: '1px solid var(--cream-mid)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                  {item.label}
+                </button>
+              ))
+            ) : (
+              isBarber && (
+                <Link href="/admin" onClick={() => setMobileMenu(false)}
+                  style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
+                  Panel Admin
+                </Link>
+              )
             )}
             <div style={{ padding: '1rem 2rem' }}>
               {!user ? (
@@ -132,7 +152,7 @@ export default function AppHeader({ initialUser }: { initialUser?: SessionUser |
                   style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'none', border: 'none', padding: 0, cursor: 'pointer', width: '100%', textAlign: 'left' }}>
                   <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--green-dark)', flexShrink: 0 }}>
                     {user.image
-                      ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                      ? <img src={user.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{user.name?.[0]?.toUpperCase() ?? '?'}</div>
                     }
                   </div>

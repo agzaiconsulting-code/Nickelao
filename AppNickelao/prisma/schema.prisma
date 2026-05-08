@@ -127,11 +127,15 @@ model Appointment {
   service   Service           @relation(fields: [serviceId], references: [id])
   startTime DateTime
   endTime   DateTime
-  status    AppointmentStatus @default(CONFIRMED)
-  notes     String?
-  createdAt DateTime          @default(now())
+  status       AppointmentStatus @default(CONFIRMED)
+  notes        String?
+  autoAssigned Boolean           @default(false)
+  createdAt    DateTime          @default(now())
 
   review Review?
+
+  @@index([barberId, startTime])
+  @@index([clientId, startTime])
 }
 
 model UnavailabilityBlock {
@@ -142,6 +146,8 @@ model UnavailabilityBlock {
   endTime   DateTime
   reason    String?
   createdAt DateTime @default(now())
+
+  @@index([barberId, startTime])
 }
 
 model Review {
