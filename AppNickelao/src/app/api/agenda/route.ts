@@ -27,7 +27,7 @@ export async function GET(req: Request) {
         status: { in: ['CONFIRMED', 'COMPLETED'] },
       },
       include: {
-        client: { select: { name: true, lastName: true, phone: true, avatarUrl: true } },
+        client: { select: { name: true, phone: true, image: true } },
         service: { select: { name: true, duration: true, price: true, category: true } },
       },
       orderBy: { startTime: 'asc' },

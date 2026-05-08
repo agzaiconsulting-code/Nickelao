@@ -6,8 +6,9 @@ export async function POST(req: Request) {
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { appointmentId, text, imageUrl } = await req.json()
+  const { appointmentId, text, imageUrl, rating } = await req.json()
   if (!appointmentId) return NextResponse.json({ error: 'appointmentId required' }, { status: 400 })
+  if (!rating || rating < 1 || rating > 5) return NextResponse.json({ error: 'rating required (1-5)' }, { status: 400 })
 
   const appointment = await prisma.appointment.findUnique({ where: { id: appointmentId } })
   if (!appointment || appointment.clientId !== user.id)
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
       appointmentId,
       clientId: user.id,
       text: text ?? null,
+      rating,
       pointsAwarded: 5,
       ...(imageUrl && { portfolioImages: { create: { clientId: user.id, imageUrl } } }),
     },

@@ -11,6 +11,7 @@
   --sage:       #8BA888;
   --sage-light: #CCDAC8;
   --sage-dark:  #547832;
+  --green:      #547832;
   --text-dark:  #1A2218;
   --text-mid:   #3A4F38;
   --text-light: #667B64;
@@ -21,13 +22,23 @@
   body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
 }
 
+/* Safe area support for Capacitor native (notch, home indicator) */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.modal-overlay { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+
 .landing-hamburger { display: none; }
+.header-desktop-links { display: flex; }
+
+.admin-cal-wrap { height: calc(100vh - 72px); }
 
 @media (max-width: 768px) {
   .landing-nav { display: none !important; }
   .landing-hamburger { display: flex !important; }
+  .header-desktop-links { display: none !important; }
+  .header-profile-btn { display: none !important; }
   .landing-about-grid { grid-template-columns: 1fr !important; }
   .landing-contact-grid { grid-template-columns: 1fr !important; }
   .landing-footer-inner { grid-template-columns: 1fr !important; gap: 2rem !important; }
   .hero h1 { font-size: 2.4rem !important; }
+  .admin-cal-wrap { height: calc(100vh - 72px); }
 }

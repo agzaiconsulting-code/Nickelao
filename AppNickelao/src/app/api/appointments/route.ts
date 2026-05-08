@@ -9,10 +9,14 @@ export async function GET() {
   const appointments = await prisma.appointment.findMany({
     where: { clientId: user.id },
     orderBy: { startTime: 'desc' },
-    include: {
-      service: true,
-      barber: { include: { user: { select: { name: true, lastName: true } } } },
-      review: true,
+    select: {
+      id: true,
+      startTime: true,
+      endTime: true,
+      status: true,
+      service: { select: { name: true, duration: true, price: true } },
+      barber: { select: { location: true, user: { select: { name: true } } } },
+      review: { select: { id: true } },
     },
   })
 
@@ -30,7 +34,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const { barberId, serviceId, startTime } = await req.json()
+  const { barberId, serviceId, startTime, autoAssigned } = await req.json()
   if (!barberId || !serviceId || !startTime) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
@@ -42,10 +46,10 @@ export async function POST(req: Request) {
   const end = new Date(start.getTime() + service.duration * 60_000)
 
   const appointment = await prisma.appointment.create({
-    data: { clientId: user.id, barberId, serviceId, startTime: start, endTime: end, status: 'CONFIRMED' },
+    data: { clientId: user.id, barberId, serviceId, startTime: start, endTime: end, status: 'CONFIRMED', autoAssigned: !!autoAssigned },
     include: {
       service: true,
-      barber: { include: { user: { select: { name: true, lastName: true } } } },
+      barber: { include: { user: { select: { name: true } } } },
     },
   })
 

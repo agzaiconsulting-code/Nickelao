@@ -1,44 +1,41 @@
 # CLAUDE.md — Nickelao Barber App
 
-## Commands
+## Comandos
 
 - Dev: `npm run dev` → http://localhost:3000
 - Build: `npm run build`
-- Test: `npm test` / single: `npm test src/lib/example.test.ts`
+- Test: `npm test` / individual: `npm test src/lib/example.test.ts`
 - Lint: `npm run lint`
-
-## Stack
-
-Next.js 16 App Router · TypeScript · Tailwind CSS v3 · Clerk (auth) · Supabase (DB + Storage) · Capacitor (iOS/Android)
-
-- `create-next-app` instala Tailwind v4 por defecto — este proyecto usa **v3** (`tailwind.config.ts`)
-- `jest.config.ts` requiere `ts-node` como devDependency
-- UI/UX Pro Max skill instalado en `.claude/skills/ui-ux-pro-max/`
+- Seed BD: `npx ts-node --compiler-options '{"module":"CommonJS"}' prisma/seed.ts`
 
 ---
 
-## Qué es
+## Stack real (rama `prelive`)
 
-**Nickelao Barber** — app de gestión de reservas para una barbería con dos locales (Foz y Mondoñedo, Galicia). Las reservas se gestionan a través de **Booksy** (la API aún no está disponible; usar mock hasta entonces).
+- **Next.js 16** App Router · TypeScript · Tailwind CSS **v3** (`tailwind.config.ts`)
+- **NextAuth v4** — Google OAuth · sesión por cookie `next-auth.session-token`
+- **Prisma + Supabase** (PostgreSQL con pgBouncer) · `src/lib/prisma.ts`
+- **Autenticación**: `getCurrentUser()` en `src/lib/auth.ts` — devuelve usuario desde sesión + BD
+- Capacitor (iOS/Android) — pendiente
+
+> Tailwind v4 se instala por defecto con `create-next-app` — este proyecto usa **v3**. No actualizar.
 
 ---
 
 ## Design System
 
 ```
-Fuentes:  [por definir — elegante barbería moderna]
-Paleta:
-  --dark-green:  #1E2A27   ← fondo hero, headers, paneles oscuros
-  --green:       #547832   ← acentos verdes, botones secundarios
-  --yellow:      #F2C230   ← CTAs principales, badges, NickPoints
-  --cream:       #F5F4E6   ← fondo base
-  --gray-1:      #A7A8A3   ← texto secundario
-  --gray-2:      #C8C9C4   ← bordes, separadores
-  --gray-3:      #E6E6E0   ← fondos alternativos
+#1E2A27  dark-green  — fondo hero, headers, paneles
+#547832  green       — acentos, botones secundarios
+#F2C230  yellow      — CTAs, badges, NickPoints
+#F5F4E6  cream       — fondo base
+#A7A8A3  gray-1      — texto secundario
+#C8C9C4  gray-2      — bordes, separadores
+#e0dfd0  border      — bordes suaves (usado en admin)
 ```
 
-Logo: `public/logo.jpeg` (poste de barbero — verde/amarillo/crema sobre fondo sage).
-Estética: barbería premium moderna. Sin efectos excesivos. Limpio y funcional.
+Logo: `public/logo.jpeg`. Fuentes: Playfair Display (títulos) + DM Sans (UI).
+El panel `/admin` usa **inline styles** exclusivamente (sin Tailwind).
 
 ---
 
@@ -46,189 +43,148 @@ Estética: barbería premium moderna. Sin efectos excesivos. Limpio y funcional.
 
 | Local | Barberos |
 |---|---|
-| Foz | Nick, Diego |
-| Mondoñedo | Roberto, Pepe |
+| Foz (`FOZ`) | Nick, Diego |
+| Mondoñedo (`MONDONEDO`) | Roberto, Pepe |
 
-Horario: Lun–Vie 09:00–20:00 · Sáb 09:00–15:00 · Dom cerrado
-
----
-
-## Roles de usuario
-
-### CLIENTE
-- Ver calendario: sus reservas con nombre propio; las demás aparecen bloqueadas
-- Reservar slots disponibles
-- Acceso a: Home, Mis citas, Reservas, Perfil, Portafolio
-- Sistema de NickPoints
-
-### PELUQUERO
-- Vista principal: su propia agenda (estilo Booksy — 2 días con scroll vertical)
-- Ve nombres de clientes en las reservas
-- Puede reservar citas a nombre de un cliente
-- Puede añadir indisponibilidad (bloquea slot vía API Booksy)
-- Botón "+" flotante → reservar cliente | añadir indisponibilidad
-- Puede acceder al perfil de clientes desde cada reserva
-- **No tiene**: Mis citas, NickPoints
-
-### ADMIN PELUQUERÍA
-- Todo lo de PELUQUERO
-- Puede solicitar bloqueo de clientes por no asistencia (desde su perfil)
-
-### ADMIN GENERAL
-- Todo lo de ADMIN PELUQUERÍA
-- Puede editar roles de cualquier usuario
-- Puede activar/desactivar peluqueros (vacaciones, baja)
+**Horario real:** Lun–Vie 09:30–13:30 y 16:00–20:30 · Sáb 09:00–13:00 · Dom cerrado
 
 ---
 
-## Estructura de páginas
+## Roles (`src/types/next-auth.d.ts`)
 
-### `/` — Login/Register
-- Logo + nombre de la barbería
-- Botón "Continuar con Google" (Clerk)
-- Al registrarse: formulario con Nombre, Apellido, Teléfono, Email
-
-### `/home` — Home (clientes)
-- Header con imagen/logo de la peluquería
-- CTA "Reservar cita" → `/reservas`
-- Próxima cita del usuario (si existe)
-
-### `/mis-citas` — Mis citas (solo clientes)
-- **Próximas**: fecha, hora, local, peluquero
-  - Botones Reprogramar / Cancelar (solo si quedan > 12h)
-  - Reprogramar: nuevo flujo de reserva → cancela la antigua + crea la nueva (vía Booksy API)
-  - Cancelar: popup de confirmación → cancela vía Booksy API
-  - Si < 12h: mensaje informativo, no se puede cancelar ni reprogramar
-- **Historial**: citas pasadas
-  - Se puede subir foto + reseña del corte → gana 5 NickPoints
-
-### `/reservas` — Reservas
-Flujo de 4 pasos:
-1. **Local** → Foz | Mondoñedo
-2. **Servicio** → desplegable con catálogo
-3. **Peluquero** → Nick/Diego (Foz) | Roberto/Pepe (Mondoñedo) | Autoasignación (más disponible)
-4. **Slot** → calendario del día con slots disponibles (petición a Booksy API por duración del servicio)
-   - Al seleccionar slot → botón "Reservar"
-   - Segunda confirmación con resumen de la cita
-   - Confirmar → petición a Booksy API + guardar en DB + mostrar "+5 NickPoints" + redirigir a Home
-
-### `/perfil` — Perfil (clientes)
-- Foto de perfil (tap para cambiar desde galería)
-- Nombre y apellidos
-- Teléfono
-- Email
-- NickPoints acumulados
-
-### `/portfolio` — Portafolio
-- Grid estilo Instagram con fotos subidas por usuarios
-- Se puede comentar en cada imagen
-
-### `/agenda` — Agenda (solo peluqueros/admins)
-- Vista 2 días con scroll vertical (estilo Booksy)
-- Cada peluquero ve solo su propia agenda
-- Nombre del cliente visible en cada reserva
-- Tap en reserva → perfil del cliente
-- Botón "+" flotante → reservar cliente | añadir indisponibilidad
-
----
-
-## Catálogo de servicios
-
-Ver `serviciosJSON.txt` para datos completos. Cuatro categorías:
-- **Populares**: Corte tendencia/degradado (13€/30min), Corte+barba (20€/45min), Corte/rapado (12€/25min)
-- **Corte**: 7 servicios, 5€–17€, 10–45min
-- **Barba**: 4 servicios, 8€–12€, 15–30min
-- **Combinados**: 4 servicios, 16€–25€, 35–55min
-
----
-
-## Sistema de NickPoints
-
-| Acción | Puntos |
+| Rol | Acceso |
 |---|---|
-| Reserva confirmada y asistida | +5 |
-| Reseña + foto subida tras cita | +5 |
-| No asistencia | −todos los puntos |
-| Total para corte gratis | 100 |
+| `CLIENT` | Reservas, mis citas, perfil, portafolio, NickPoints |
+| `BARBER` | Panel admin (calendario + bloqueados), sin mis citas ni NickPoints |
+| `ADMIN_SHOP` | Todo BARBER + bloquear clientes |
+| `ADMIN_GENERAL` | Todo ADMIN_SHOP + cambiar roles, activar/desactivar peluqueros, cambiar peluquero de local |
 
 ---
 
-## Política de no asistencia
+## Convención UTC
 
-- Admin peluquería puede bloquear a un cliente desde su perfil
-- Cliente bloqueado ve mensaje: "Bloqueado por no asistencia el día X a las Y. Pasa por el local para proceder al pago y poder reservar de nuevo."
-
----
-
-## Notificaciones push
-
-(Depende de integración con Booksy o servicio independiente)
-- 24h antes de la cita: "Recuerda que tienes cita el día X a las Y horas"
-- 5h antes de la cita
+> Los tiempos se almacenan y comparan como **UTC tratado como hora local española** en todo el sistema. El navegador envía `${dateStr}T${HH:MM}:00.000Z`, el servidor consulta con límites UTC del día, y `isoToHHMM` usa `getUTCHours()`/`getUTCMinutes()`. Uniformemente "incorrecto" por offset pero consistente.
 
 ---
 
-## Integración Booksy
+## Páginas implementadas
 
-La API de Booksy **aún no está disponible**. Mientras tanto:
-- Usar `src/lib/booksy/mock.ts` que simula todas las respuestas
-- La interfaz del cliente Booksy debe estar en `src/lib/booksy/client.ts`
-- Al tener acceso real a la API, solo hay que reemplazar `mock.ts` sin tocar el resto
+| Ruta | Estado | Descripción |
+|---|---|---|
+| `/` | ✅ | Landing pública con formulario de reservas integrado |
+| `/home` | ✅ | Home clientes — próxima cita + CTA reservar |
+| `/reservas` | ✅ | Flujo de 4 pasos: local → servicio → peluquero → slot |
+| `/mis-citas` | ✅ | Próximas (cancelar >12h) + historial |
+| `/perfil` | ✅ | Datos usuario, foto, NickPoints |
+| `/portfolio` | ✅ | Grid fotos + comentarios |
+| `/admin` | ✅ | Panel admin (ver abajo) |
+| `/sign-in`, `/sign-up` | ✅ | NextAuth Google OAuth |
+| `/complete-profile` | ✅ | Recoge teléfono tras primer login |
+| `/agenda` | ⚠️ | Vista peluquero individual — parcialmente implementada |
 
-Operaciones necesarias:
-- `getAvailableSlots(barberId, serviceId, date)` → slots libres
-- `createAppointment(clientId, barberId, serviceId, slotId)` → nueva reserva
-- `cancelAppointment(appointmentId)` → cancelar
-- `addUnavailability(barberId, startTime, endTime)` → bloquear slot
+---
+
+## Panel de administración (`/admin`)
+
+Tres tabs: **Calendario · Bloqueados · Configuración**
+
+### Calendario
+- Selector semanal de días + picker de mes
+- Columnas por peluquero del local seleccionado
+- Filas cada 30 min según horario real
+- **Citas** (fondo oscuro): click → popup con detalle + botón eliminar (con confirmación)
+- **Bloqueos** (fondo rayado gris): click ✕ → elimina directamente
+- **Slot vacío**: click → `SlotModal` con dos tabs:
+  - *Reservar cliente*: buscar cliente + seleccionar servicio → `POST /api/admin/book`
+  - *Bloquear horario*: duración + motivo → `POST /api/admin/unavailability`
+
+### Bloqueados
+- Lista de clientes bloqueados con motivo y fecha
+- Botón "Bloquear cliente": desplegable con todos los clientes + campo motivo
+- Botón "Desbloquear" por cliente
+
+### Configuración
+- Tarjetas por peluquero agrupadas por local
+- **Activar/Desactivar** (solo `ADMIN_GENERAL`)
+- **Cambiar de peluquería** — selector Foz/Mondoñedo (solo `ADMIN_GENERAL`)
+- Peluqueros y `ADMIN_SHOP` ven la sección en modo solo lectura
+
+---
+
+## APIs implementadas
+
+### Públicas / cliente
+| Endpoint | Método | Descripción |
+|---|---|---|
+| `/api/auth/[...nextauth]` | GET/POST | NextAuth Google OAuth |
+| `/api/barbers` | GET | Barberos activos por local (`?location=FOZ\|MONDONEDO`) |
+| `/api/services` | GET | Catálogo de servicios |
+| `/api/slots` | GET | Slots disponibles (`?barberIds=&date=&duration=`) |
+| `/api/appointments` | POST | Crear reserva (cliente autenticado) |
+| `/api/appointments/[id]/cancel` | PATCH | Cancelar propia reserva (>12h) |
+| `/api/users/me` | GET/PATCH | Perfil propio |
+| `/api/users/complete-profile` | POST | Guardar teléfono tras registro |
+| `/api/portfolio` | GET/POST | Fotos portafolio |
+| `/api/reviews` | POST | Reseña con foto |
+| `/api/agenda` | GET | Agenda del peluquero autenticado |
+
+### Admin (`BARBER` / `ADMIN_SHOP` / `ADMIN_GENERAL`)
+| Endpoint | Método | Descripción |
+|---|---|---|
+| `/api/admin/appointments` | GET | Citas + bloqueos del día por local |
+| `/api/admin/appointments/[id]` | DELETE | Eliminar cualquier cita |
+| `/api/admin/unavailability` | POST | Crear bloque de indisponibilidad |
+| `/api/admin/unavailability/[id]` | DELETE | Eliminar bloque |
+| `/api/admin/book` | POST | Crear reserva para un cliente |
+| `/api/admin/barbers` | GET | Todos los peluqueros con config |
+| `/api/admin/barbers/[id]` | PATCH | Cambiar `isActive` o `location` (solo `ADMIN_GENERAL`) |
+| `/api/admin/users` | GET | Buscar clientes (`?q=` / `?blocked=true`) |
+| `/api/admin/users/[id]` | PATCH | Bloquear/desbloquear cliente |
 
 ---
 
 ## Archivos clave
 
-| Archivo | Contenido |
+| Archivo | Descripción |
 |---|---|
-| `ClaudeDesign/index.html` | Prototipo visual completo (HTML + React CDN) |
-| `ClaudeDesign/uploads/logoDefinitivo.jpeg` | Logo oficial actual |
+| `src/lib/slots.ts` | Cálculo de slots disponibles con horario real |
+| `src/lib/auth.ts` | `getCurrentUser()` — sesión + BD |
+| `src/lib/prisma.ts` | Cliente Prisma singleton |
+| `prisma/schema.prisma` | Esquema BD: User, Barber, Service, Appointment, UnavailabilityBlock, Review, Portfolio |
+| `prisma/seed.ts` | Seed: 15 servicios + 4 peluqueros |
+| `src/app/admin/page.tsx` | Panel admin completo (inline styles, ~800 líneas) |
+| `src/app/page.tsx` | Landing + BookingSection (formulario reservas) |
+| `ClaudeDesign/index.html` | Prototipo visual de referencia (no migrar directamente) |
 | `serviciosJSON.txt` | Catálogo de servicios con precios y duraciones |
-| `src/app/` | Next.js scaffold (vacío, pendiente de construir) |
 
 ---
 
-## Estado actual
+## Estado actual (rama `prelive`)
 
-**Hecho:**
-- Prototipo UI en `ClaudeDesign/index.html` (solo estético, no migrarlo directamente)
-- Scaffold Next.js + Tailwind v3 + Jest + TypeScript
-- UI/UX Pro Max skill instalado
+**Implementado:**
+- Auth completa (Google OAuth, roles, complete-profile)
+- BD: esquema Prisma + seed con servicios y peluqueros
+- Flujo de reservas cliente (landing + `/reservas`)
+- Home, mis citas (cancelación >12h), perfil, portafolio
+- Panel admin completo: calendario, bloqueados, configuración
+- Bloqueos de horario que impiden reservas de clientes
+- Eliminación de citas y bloqueos desde el calendario
 
-**Pendiente — Fase 1 (base):**
-1. Instalar y configurar Clerk (Google OAuth)
-2. Configurar Supabase (DB schema: users, appointments, points, reviews, portfolio)
-3. Tailwind design tokens (colores de marca)
-4. Layout base + fuentes
-5. Página Login/Register
-
-**Pendiente — Fase 2 (núcleo):**
-6. Mock Booksy client
-7. Flujo de reserva completo
-8. Home con próxima cita
-9. Mis citas (próximas + historial)
-
-**Pendiente — Fase 3 (extra):**
-10. Portafolio + comentarios
-11. Sistema de NickPoints
-12. Vista agenda para peluqueros
-13. Gestión de roles (admin)
-14. Notificaciones push
-15. Capacitor (iOS/Android)
+**Pendiente:**
+- NickPoints (contabilizar asistencia real)
+- Notificaciones push (24h y 5h antes)
+- Vista `/agenda` completa para peluqueros
+- Capacitor (iOS/Android)
 
 ---
 
 ## Gotchas
 
-- Booksy API no disponible aún — todo debe pasar por `src/lib/booksy/client.ts` para poder swapear el mock fácilmente
-- La cancelación/reprogramación tiene regla de 12h — validar siempre en servidor, no solo en cliente
-- Peluqueros NO ven la sección "Mis citas" ni tienen NickPoints
-- `autoasignación` asigna al barbero con más disponibilidad en la fecha elegida
+- UTC = hora España en todo el sistema (ver convención arriba). No convertir zonas horarias.
+- Cancelación cliente: regla 12h solo en `/api/appointments/[id]/cancel`. El admin no tiene esa restricción → usa `/api/admin/appointments/[id]` (DELETE).
+- Panel admin: solo inline styles, sin clases Tailwind. Paleta hardcodeada.
+- `prisma generate` falla si el dev server está corriendo (bloqueo de DLL en Windows). Parar el servidor antes de `npm run build`.
+- Peluqueros desactivados (`isActive: false`) no aparecen en el selector de reservas ni en el calendario.
+- `autoasignación` de peluquero: asigna al que tenga más slots libres en la fecha elegida.
 
 Piensa antes de actuar. Lee los archivos antes de escribir código. Edita solo lo que cambia. Sin preámbulos ni resúmenes.

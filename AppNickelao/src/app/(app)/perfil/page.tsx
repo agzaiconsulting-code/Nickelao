@@ -10,7 +10,7 @@ interface UserData {
   email: string
   phone: string | null
   points: number
-  avatarUrl: string | null
+  image: string | null
 }
 
 export default function PerfilPage() {
@@ -64,8 +64,8 @@ export default function PerfilPage() {
       <div className="bg-[#1E2A27] px-5 pt-14 pb-8">
         <div className="flex flex-col items-center gap-3">
           <div className="w-20 h-20 rounded-full bg-[#547832] flex items-center justify-center text-2xl font-bold text-white overflow-hidden">
-            {user.avatarUrl
-              ? <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
+            {user.image
+              ? <img src={user.image} alt="" className="w-full h-full object-cover" />
               : initials
             }
           </div>

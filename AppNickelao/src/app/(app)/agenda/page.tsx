@@ -8,7 +8,7 @@ interface AppointmentItem {
   startTime: string
   endTime: string
   status: string
-  client: { name: string; lastName: string; phone: string | null; avatarUrl: string | null }
+  client: { name: string; lastName: string; phone: string | null; image: string | null }
   service: { name: string; duration: number; price: number; category: string }
 }
 
@@ -327,8 +327,8 @@ export default function AgendaPage() {
 
             <div className="flex items-center gap-4 mb-5">
               <div className="w-12 h-12 rounded-full bg-[#547832] flex items-center justify-center font-bold text-white text-lg overflow-hidden">
-                {selectedAppt.client.avatarUrl
-                  ? <img src={selectedAppt.client.avatarUrl} alt="" className="w-full h-full object-cover" />
+                {selectedAppt.client.image
+                  ? <img src={selectedAppt.client.image} alt="" className="w-full h-full object-cover" />
                   : `${selectedAppt.client.name[0]}${selectedAppt.client.lastName[0]}`
                 }
               </div>
