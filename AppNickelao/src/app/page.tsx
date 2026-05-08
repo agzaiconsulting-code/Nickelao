@@ -1022,8 +1022,8 @@ export default function LandingPage() {
             <div>
               <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.3rem', color: 'var(--green-dark)', marginBottom: '1.5rem' }}>Encuéntranos</h3>
               {[
-                { icon: <IconLocation />, label: 'Dirección', value: 'Foz · Mondoñedo, Galicia' },
-                { icon: <IconMail />, label: 'Email', value: 'hola@nickelaobarber.com' },
+                { icon: <IconLocation />, label: 'Dirección', value: 'Foz - Av. da Mariña, 26 · Mondoñedo - Praza da Catedral, 13' },
+                { icon: <IconMail />, label: 'Email', value: 'nickelaobarbershop@gmail.com' },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.9rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: 38, height: 38, borderRadius: 8, background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.icon}</div>
@@ -1098,7 +1098,7 @@ export default function LandingPage() {
           <div>
             <h4 style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', marginBottom: '1rem' }}>Contacto</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              {[['#', 'Foz · Mondoñedo, Galicia'], ['mailto:hola@nickelaobarber.com', 'hola@nickelaobarber.com'], ['#', '@nickelaobarber']].map(([href, label]) => (
+              {[['#', 'Foz - Av. da Mariña, 26 · Mondoñedo - Praza da Catedral, 13'], ['mailto:nickelaobarbershop@gmail.com', 'nickelaobarbershop@gmail.com'], ['#', '@nickelaobarber']].map(([href, label]) => (
                 <li key={label}><a href={href} style={{ fontSize: '0.85rem', color: 'rgba(175,195,173,0.9)', textDecoration: 'none', transition: 'color 0.18s' }}
                   onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)'}
                   onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(175,195,173,0.9)'}>{label}</a></li>
