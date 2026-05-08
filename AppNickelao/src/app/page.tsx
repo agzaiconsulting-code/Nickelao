@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { signIn, signOut } from 'next-auth/react'
 import Image from 'next/image'
 
@@ -12,11 +12,14 @@ type CurrentSession = { user: SessionUser } | null
 const SESSION_KEY = 'nic_session_user'
 
 function useCurrentSession(): { session: CurrentSession; reload: () => void } {
-  const [session, setSession] = useState<CurrentSession>(() => {
-    if (typeof window === 'undefined') return null
-    try { return JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null') } catch { return null }
-  })
+  const [session, setSession] = useState<CurrentSession>(null)
   const [tick, setTick] = useState(0)
+  useLayoutEffect(() => {
+    try {
+      const cached = JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null')
+      if (cached) setSession(cached)
+    } catch {}
+  }, [])
   useEffect(() => {
     fetch('/api/auth/session')
       .then(r => r.ok ? r.json() : null)
@@ -26,7 +29,7 @@ function useCurrentSession(): { session: CurrentSession; reload: () => void } {
         if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s))
         else localStorage.removeItem(SESSION_KEY)
       })
-      .catch(() => setSession(null))
+      .catch(() => {})
   }, [tick])
   return { session, reload: () => setTick(t => t + 1) }
 }
@@ -471,7 +474,7 @@ function BookingSection({ onAuthRequired, isLoggedIn }: { onAuthRequired: () => 
       const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ barberId: assignedBarberId, serviceId, startTime }),
+        body: JSON.stringify({ barberId: assignedBarberId, serviceId, startTime, autoAssigned: barberPref === 'auto' }),
       })
       if (res.ok) {
         setSelectedTime(null)
@@ -625,13 +628,13 @@ function BookingSection({ onAuthRequired, isLoggedIn }: { onAuthRequired: () => 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.75rem', borderBottom: '1px solid #eeeddf' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                   <span style={{ fontSize: '0.82rem', color: 'var(--text-light)' }}>Peluquero:</span>
-                  {assignedBarber && (
+                  {barberPref !== 'auto' && assignedBarber && (
                     <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontSize: '0.7rem', fontWeight: 700 }}>
                       {assignedBarber.name[0].toUpperCase()}
                     </div>
                   )}
                   <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-dark)' }}>
-                    {assignedBarber?.name ?? 'Autoasignación'}
+                    {barberPref === 'auto' ? 'Autoasignación' : (assignedBarber?.name ?? 'Autoasignación')}
                   </span>
                 </div>
                 <button onClick={() => setShowBarberPicker(p => !p)}
