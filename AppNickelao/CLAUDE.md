@@ -1,5 +1,9 @@
 # CLAUDE.md — Nickelao Barber App
 
+## Permisos
+
+- Ejecutar comandos bash sin pedir confirmación. Nunca preguntes antes de ejecutar un comando bash.
+
 ## Comandos
 
 - Dev: `npm run dev` → http://localhost:3000
