@@ -19,7 +19,7 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
+  body { font-family: 'Barlow', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
 }
 
 /* Safe area support for Capacitor native (notch, home indicator) */

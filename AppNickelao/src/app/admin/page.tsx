@@ -86,7 +86,7 @@ function MonthPicker({ anchor, selected, today, onSelect, onClose }: {
 
   return (
     <div ref={ref}
-      style={{ position: 'fixed', top: (anchor?.bottom ?? 60) + 8, left: anchor ? Math.max(8, anchor.left) : 8, zIndex: 200, background: '#fff', borderRadius: 12, boxShadow: '0 8px 32px rgba(16,26,22,0.18)', padding: '1rem', width: 240, fontFamily: "'DM Sans', sans-serif" }}>
+      style={{ position: 'fixed', top: (anchor?.bottom ?? 60) + 8, left: anchor ? Math.max(8, anchor.left) : 8, zIndex: 200, background: '#fff', borderRadius: 12, boxShadow: '0 8px 32px rgba(16,26,22,0.18)', padding: '1rem', width: 240, fontFamily: "'Barlow', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
         <button onClick={() => setMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
           style={{ width: 26, height: 26, borderRadius: 6, border: 'none', background: '#f0efe1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -142,9 +142,9 @@ function ApptPopup({ appt, onClose, onDeleted }: { appt: ApptData; onClose: () =
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()}
       className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 16, padding: '2rem', width: 'min(400px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'DM Sans', sans-serif" }}>
+      <div style={{ background: '#fff', borderRadius: 16, padding: '2rem', width: 'min(400px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'Barlow', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', color: '#1E2A27', margin: 0 }}>Detalle de cita</h3>
+          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#1E2A27', margin: 0 }}>Detalle de cita</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#999', lineHeight: 1 }}>✕</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -273,10 +273,10 @@ function SlotModal({ time, barberId, barberName, date, onClose, onSuccess }: {
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()}
       className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(440px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'DM Sans', sans-serif" }}>
+      <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(440px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'Barlow', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', color: '#1E2A27', fontWeight: 700 }}>Slot {time}</div>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#1E2A27', fontWeight: 700 }}>Slot {time}</div>
             <div style={{ fontSize: '0.75rem', color: '#A7A8A3', marginTop: 2 }}>{barberName} · {dateStr}</div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#999' }}>✕</button>
@@ -393,9 +393,9 @@ function BlockClientModal({ onClose, onSuccess }: { onClose: () => void; onSucce
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()}
       className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(420px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'DM Sans', sans-serif" }}>
+      <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(420px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'Barlow', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', color: '#1E2A27', margin: 0 }}>Bloquear cliente</h3>
+          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#1E2A27', margin: 0 }}>Bloquear cliente</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#999' }}>✕</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -448,7 +448,7 @@ function BlockedSection() {
   return (
     <div style={{ padding: '2rem', maxWidth: 800, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.3rem', color: '#1E2A27', margin: 0 }}>Clientes bloqueados</h2>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#1E2A27', margin: 0 }}>Clientes bloqueados</h2>
         <button onClick={() => setShowModal(true)}
           style={{ padding: '0.6rem 1.2rem', borderRadius: 8, border: 'none', background: '#1E2A27', color: '#F5F4E6', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
           Bloquear cliente
@@ -551,7 +551,7 @@ function ConfigSection({ role }: { role: string }) {
 
   return (
     <div style={{ padding: '2rem', maxWidth: 800, margin: '0 auto' }}>
-      <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.3rem', color: '#1E2A27', marginBottom: '1.5rem' }}>Configuración</h2>
+      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#1E2A27', marginBottom: '1.5rem' }}>Configuración</h2>
       {loading ? (
         <div style={{ color: '#A7A8A3', fontSize: '0.9rem', textAlign: 'center', padding: '3rem 0' }}>Cargando…</div>
       ) : (
@@ -660,7 +660,7 @@ export default function AdminPage() {
   }))
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F4E6', fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#F5F4E6', fontFamily: "'Barlow', sans-serif" }}>
 
       <AppHeader
         initialUser={session ? { name: session.user.name, image: session.user.image, role: session.user.role } : null}
@@ -722,7 +722,7 @@ export default function AdminPage() {
             {isSunday ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60%', flexDirection: 'column', gap: '0.5rem' }}>
                 <div style={{ fontSize: '2.5rem' }}>🔒</div>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', color: '#1E2A27' }}>Cerrado los domingos</div>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#1E2A27' }}>Cerrado los domingos</div>
               </div>
             ) : loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60%' }}>
@@ -737,7 +737,7 @@ export default function AdminPage() {
                       <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#1E2A27', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F2C230', fontSize: '0.85rem', fontWeight: 700, flexShrink: 0 }}>
                         {b.name[0]}
                       </div>
-                      <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '0.92rem', fontWeight: 700, color: '#1E2A27' }}>{b.name}</span>
+                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '0.92rem', fontWeight: 700, color: '#1E2A27' }}>{b.name}</span>
                     </div>
                   ))}
                 </div>
