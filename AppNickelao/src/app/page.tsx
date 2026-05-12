@@ -144,7 +144,7 @@ function AuthModal({ onClose }: { onClose: () => void }) {
     >
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(420px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)', textAlign: 'center' }}>
         <Image src="/logo.jpeg" alt="Logo" width={64} height={64} style={{ borderRadius: 12, objectFit: 'cover', border: '2px solid var(--sage-dark)', marginBottom: '1.25rem' }} />
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.6rem', color: 'var(--green-dark)', marginBottom: '0.4rem' }}>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: 'var(--green-dark)', marginBottom: '0.4rem' }}>
           Bienvenido a Nickelao
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '2rem', lineHeight: 1.6 }}>
@@ -153,7 +153,7 @@ function AuthModal({ onClose }: { onClose: () => void }) {
         <button
           onClick={handleGoogle}
           disabled={loading}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '0.9rem 1.5rem', borderRadius: 10, border: '1.5px solid #d4d3c4', background: 'white', color: '#3c4043', fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, transition: 'all 0.18s', boxShadow: '0 1px 4px rgba(0,0,0,0.1)', marginBottom: '1rem' }}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '0.9rem 1.5rem', borderRadius: 10, border: '1.5px solid #d4d3c4', background: 'white', color: '#3c4043', fontFamily: "'Barlow', sans-serif", fontSize: '0.95rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, transition: 'all 0.18s', boxShadow: '0 1px 4px rgba(0,0,0,0.1)', marginBottom: '1rem' }}
           onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)' }}
           onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 1px 4px rgba(0,0,0,0.1)'}
         >
@@ -197,7 +197,7 @@ function CompleteProfileModal({ name, onDone }: { name: string; onDone: () => vo
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(440px, 92vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)' }}>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green-dark)', marginBottom: '0.4rem' }}>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', color: 'var(--green-dark)', marginBottom: '0.4rem' }}>
           Un último paso
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '1.75rem', lineHeight: 1.6 }}>
@@ -207,11 +207,11 @@ function CompleteProfileModal({ name, onDone }: { name: string; onDone: () => vo
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
             <label style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>Teléfono</label>
             <input type="tel" placeholder="+34 600 000 000" value={phone} onChange={e => setPhone(e.target.value)} required
-              style={{ padding: '0.75rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'white', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none' }} />
+              style={{ padding: '0.75rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'white', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none' }} />
           </div>
           {err && <p style={{ fontSize: '0.82rem', color: '#c0392b' }}>{err}</p>}
           <button type="submit" disabled={loading}
-            style={{ padding: '0.9rem', borderRadius: 8, border: 'none', background: 'var(--green-dark)', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem' }}>
+            style={{ padding: '0.9rem', borderRadius: 8, border: 'none', background: 'var(--green-dark)', color: 'var(--cream)', fontFamily: "'Barlow', sans-serif", fontSize: '0.92rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem' }}>
             {loading ? 'Guardando...' : 'Guardar y continuar'}
           </button>
         </form>
@@ -275,7 +275,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
       onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={{ background: 'var(--cream)', borderRadius: 16, padding: '2.5rem', width: 'min(460px, 94vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.4rem', color: 'var(--green-dark)' }}>Mi perfil</h2>
+          <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', color: 'var(--green-dark)' }}>Mi perfil</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: 'var(--text-light)', lineHeight: 1 }}>✕</button>
         </div>
 
@@ -304,29 +304,29 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
             <div key={f.label} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               <label style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>{f.label}</label>
               <input type={f.type} placeholder={f.placeholder} value={f.value} onChange={e => f.set(e.target.value)}
-                style={{ padding: '0.72rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'white', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none' }} />
+                style={{ padding: '0.72rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'white', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none' }} />
             </div>
           ))}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
             <label style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>Email</label>
             <input type="email" value={session?.user?.email ?? ''} disabled
-              style={{ padding: '0.72rem 1rem', borderRadius: 8, border: '1.5px solid #e0dfd0', background: '#f5f4e8', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: 'var(--text-light)', outline: 'none', cursor: 'not-allowed' }} />
+              style={{ padding: '0.72rem 1rem', borderRadius: 8, border: '1.5px solid #e0dfd0', background: '#f5f4e8', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', color: 'var(--text-light)', outline: 'none', cursor: 'not-allowed' }} />
           </div>
           {err && <p style={{ fontSize: '0.82rem', color: '#c0392b' }}>{err}</p>}
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
             <button type="button" onClick={onClose}
-              style={{ flex: 1, padding: '0.8rem', borderRadius: 8, border: '1.5px solid #d4d3c4', background: 'transparent', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer' }}>
+              style={{ flex: 1, padding: '0.8rem', borderRadius: 8, border: '1.5px solid #d4d3c4', background: 'transparent', color: 'var(--text-mid)', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer' }}>
               Cancelar
             </button>
             <button type="submit" disabled={saving || uploading}
-              style={{ flex: 2, padding: '0.8rem', borderRadius: 8, border: 'none', background: saved ? '#2ecc71' : 'var(--green-dark)', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, cursor: (saving || uploading) ? 'not-allowed' : 'pointer', opacity: (saving || uploading) ? 0.7 : 1, transition: 'background 0.3s' }}>
+              style={{ flex: 2, padding: '0.8rem', borderRadius: 8, border: 'none', background: saved ? '#2ecc71' : 'var(--green-dark)', color: 'var(--cream)', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', fontWeight: 600, cursor: (saving || uploading) ? 'not-allowed' : 'pointer', opacity: (saving || uploading) ? 0.7 : 1, transition: 'background 0.3s' }}>
               {saved ? '✓ Guardado' : saving ? 'Guardando...' : 'Guardar cambios'}
             </button>
           </div>
         </form>
 
         <button onClick={() => signOut()}
-          style={{ width: '100%', marginTop: '1.25rem', padding: '0.65rem', borderRadius: 8, border: '1.5px solid #d4d3c4', background: 'transparent', color: 'var(--text-light)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
+          style={{ width: '100%', marginTop: '1.25rem', padding: '0.65rem', borderRadius: 8, border: '1.5px solid #d4d3c4', background: 'transparent', color: 'var(--text-light)', fontFamily: "'Barlow', sans-serif", fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
           Cerrar sesión
         </button>
       </div>
@@ -343,7 +343,7 @@ function ProfileButton({ onOpenAuth }: { onOpenAuth: () => void }) {
   if (!session?.user) {
     return (
       <button onClick={onOpenAuth}
-        style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.45rem 1.25rem', borderRadius: 6, border: '1.5px solid var(--green-dark)', color: 'var(--green-dark)', background: 'transparent', cursor: 'pointer', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
+        style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.45rem 1.25rem', borderRadius: 6, border: '1.5px solid var(--green-dark)', color: 'var(--green-dark)', background: 'transparent', cursor: 'pointer', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--green-dark)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--cream)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--green-dark)' }}>
         Acceder
@@ -385,12 +385,12 @@ function BookingSection() {
     <section id="reservas" style={{ padding: '5rem 2rem', background: 'var(--cream)', textAlign: 'center' }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Cita previa</div>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '1rem' }}>Reserva tu cita</h2>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '1rem' }}>Reserva tu cita</h2>
         <p style={{ color: 'var(--text-mid)', fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem' }}>
           Reserva tu cita de forma fácil y rápida a través de Booksy.<br />Elige tu servicio, peluquero y horario favorito.
         </p>
         <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer"
-          style={{ display: 'inline-block', fontFamily: "'DM Sans', sans-serif", fontSize: '1rem', fontWeight: 700, padding: '1rem 2.5rem', borderRadius: 8, background: 'var(--gold)', color: 'var(--green-dark)', textDecoration: 'none', letterSpacing: '0.01em', transition: 'all 0.2s' }}
+          style={{ display: 'inline-block', fontFamily: "'Barlow', sans-serif", fontSize: '1rem', fontWeight: 700, padding: '1rem 2.5rem', borderRadius: 8, background: 'var(--gold)', color: 'var(--green-dark)', textDecoration: 'none', letterSpacing: '0.01em', transition: 'all 0.2s' }}
           onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)' }}
           onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold)'; (e.currentTarget as HTMLAnchorElement).style.transform = '' }}>
           Reservar en Booksy →
@@ -520,7 +520,7 @@ function _BookingSection_DISABLED({ onAuthRequired, isLoggedIn }: { onAuthRequir
         {/* Section header */}
         <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
           <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Cita previa</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '0.5rem' }}>Reserva tu cita</h2>
+          <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '0.5rem' }}>Reserva tu cita</h2>
           {!isLoggedIn && (
             <div style={{ marginTop: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(242,194,48,0.12)', border: '1px solid var(--gold)', borderRadius: 8, padding: '0.6rem 1rem', fontSize: '0.82rem', color: 'var(--green-dark)', fontWeight: 500 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
@@ -546,7 +546,7 @@ function _BookingSection_DISABLED({ onAuthRequired, isLoggedIn }: { onAuthRequir
             <div style={{ flex: 1, minWidth: 200 }}>
               <div style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-light)', marginBottom: '0.45rem' }}>Servicio</div>
               <select value={serviceId} onChange={e => { setServiceId(e.target.value); setSelectedTime(null) }}
-                style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: 8, border: `1.5px solid ${serviceId ? 'var(--green-dark)' : '#d4d3c4'}`, background: '#fafaf5', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: serviceId ? 'var(--text-dark)' : 'var(--text-light)', outline: 'none', cursor: 'pointer' }}>
+                style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: 8, border: `1.5px solid ${serviceId ? 'var(--green-dark)' : '#d4d3c4'}`, background: '#fafaf5', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', color: serviceId ? 'var(--text-dark)' : 'var(--text-light)', outline: 'none', cursor: 'pointer' }}>
                 <option value="">— Elige un servicio —</option>
                 {CAT_ORDER.filter(c => servicesByCat[c]).map(cat => (
                   <optgroup key={cat} label={CAT_LABELS[cat]}>
@@ -562,14 +562,14 @@ function _BookingSection_DISABLED({ onAuthRequired, isLoggedIn }: { onAuthRequir
           {!serviceId || !selectedService ? (
             <div style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
               <div style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>✂️</div>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', color: 'var(--green-dark)', marginBottom: '0.35rem' }}>Elige un servicio para continuar</div>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: 'var(--green-dark)', marginBottom: '0.35rem' }}>Elige un servicio para continuar</div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Los horarios aparecerán según la duración del servicio.</div>
             </div>
           ) : (<>
 
             {/* ── Month title ── */}
             <div style={{ padding: '1.25rem 1.75rem 0.5rem', textAlign: 'center' }}>
-              <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', fontWeight: 700, color: 'var(--green-dark)' }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: 'var(--green-dark)' }}>
                 {MONTHS[selectedDate.getMonth()]} {selectedDate.getFullYear()}
               </span>
             </div>
@@ -683,12 +683,12 @@ function _BookingSection_DISABLED({ onAuthRequired, isLoggedIn }: { onAuthRequir
               <div style={{ padding: '1rem 1.75rem 1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'baseline', gap: '0.5rem', marginBottom: '1rem' }}>
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Total:</span>
-                  <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--green-dark)' }}>{selectedService.price.toFixed(2)} €</span>
+                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--green-dark)' }}>{selectedService.price.toFixed(2)} €</span>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>{durMin}min</span>
                 </div>
                 <button onClick={isLoggedIn ? handleBook : onAuthRequired}
                   disabled={(isLoggedIn && !selectedTime) || booking}
-                  style={{ width: '100%', padding: '0.95rem', borderRadius: 10, border: 'none', background: (isLoggedIn && selectedTime && !booking) ? 'var(--green-dark)' : '#b0c4b0', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', fontWeight: 700, cursor: (isLoggedIn && selectedTime && !booking) ? 'pointer' : 'not-allowed', transition: 'background 0.2s', letterSpacing: '0.01em' }}>
+                  style={{ width: '100%', padding: '0.95rem', borderRadius: 10, border: 'none', background: (isLoggedIn && selectedTime && !booking) ? 'var(--green-dark)' : '#b0c4b0', color: 'var(--cream)', fontFamily: "'Barlow', sans-serif", fontSize: '0.95rem', fontWeight: 700, cursor: (isLoggedIn && selectedTime && !booking) ? 'pointer' : 'not-allowed', transition: 'background 0.2s', letterSpacing: '0.01em' }}>
                   {booking ? 'Reservando…' : isLoggedIn ? 'Confirmar reserva' : '🔒 Acceder para reservar'}
                 </button>
               </div>
@@ -716,14 +716,14 @@ function ServicesSection() {
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Tarifas</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '0.5rem' }}>Nuestros servicios</h2>
+          <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '0.5rem' }}>Nuestros servicios</h2>
           <p style={{ fontSize: '0.95rem', color: 'var(--text-light)', fontWeight: 300, maxWidth: 500 }}>Todos los precios incluyen IVA. Consulta disponibilidad antes de reservar.</p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
           {tabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.5rem 1.2rem', borderRadius: 100, border: '1.5px solid', borderColor: activeTab === tab ? 'var(--green-dark)' : '#d4d3c4', background: activeTab === tab ? 'var(--green-dark)' : 'transparent', color: activeTab === tab ? 'var(--cream)' : 'var(--text-mid)', cursor: 'pointer', transition: 'all 0.18s' }}>
+              style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.5rem 1.2rem', borderRadius: 100, border: '1.5px solid', borderColor: activeTab === tab ? 'var(--green-dark)' : '#d4d3c4', background: activeTab === tab ? 'var(--green-dark)' : 'transparent', color: activeTab === tab ? 'var(--cream)' : 'var(--text-mid)', cursor: 'pointer', transition: 'all 0.18s' }}>
               {tab}
             </button>
           ))}
@@ -735,7 +735,7 @@ function ServicesSection() {
               onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 28px rgba(30,42,39,0.10)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--sage-dark)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; (e.currentTarget as HTMLDivElement).style.borderColor = '#e8e7d9' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', lineHeight: 1.3 }}>{s.nombre}</div>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', lineHeight: 1.3 }}>{s.nombre}</div>
                 <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gold-dark)', whiteSpace: 'nowrap' }}>{s.precio_eur}€</div>
               </div>
               <div style={{ fontSize: '0.83rem', color: 'var(--text-light)', lineHeight: 1.55 }}>{s.descripcion}</div>
@@ -753,20 +753,9 @@ function ServicesSection() {
 // ── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
-  const { session } = useCurrentSession()
-  const [authOpen, setAuthOpen] = useState(false)
-  const [showCompleteProfile, setShowCompleteProfile] = useState(false)
   const [mobileMenu, setMobileMenu] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
   const [aboutIdx, setAboutIdx] = useState(0)
   const [aboutLightbox, setAboutLightbox] = useState(false)
-
-  useEffect(() => {
-    if (!session?.user) return
-    fetch('/api/users/me').then(r => r.json()).then(u => {
-      if (!u.phone) setShowCompleteProfile(true)
-    }).catch(() => {})
-  }, [session?.user?.id])
   const [contactForm, setContactForm] = useState({ name: '', email: '', msg: '' })
   const [contactSent, setContactSent] = useState(false)
 
@@ -784,8 +773,6 @@ export default function LandingPage() {
     return () => window.removeEventListener('keydown', onKey)
   }, [aboutLightbox, aboutPrev, aboutNext])
 
-  function openAuth() { setAuthOpen(true) }
-
   function handleContact(e: React.FormEvent) {
     e.preventDefault()
     setContactSent(true)
@@ -796,10 +783,10 @@ export default function LandingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
+        body { font-family: 'Barlow', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
         @media (max-width: 768px) {
           .landing-nav { display: none !important; }
           .landing-booking-grid { grid-template-columns: 1fr !important; }
@@ -828,30 +815,13 @@ export default function LandingPage() {
             </a>
           ))}
         </nav>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', alignItems: 'center' }}>
-          <div className="header-desktop-links" style={{ gap: '0.6rem', alignItems: 'center' }}>
-            {session?.user?.role && ['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(session.user.role) && (
-              <a href="/admin" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
-                Panel Admin
-              </a>
-            )}
-            {session?.user?.role === 'CLIENT' && (
-              <>
-                {[['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                  <a key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
-                    {label}
-                  </a>
-                ))}
-              </>
-            )}
-          </div>
-          <div className="header-profile-btn" style={{ display: 'flex', alignItems: 'center' }}>
-            <ProfileButton onOpenAuth={openAuth} />
-          </div>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer"
+            style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', fontWeight: 700, padding: '0.5rem 1.2rem', borderRadius: 8, border: 'none', background: 'var(--gold)', color: 'var(--green-dark)', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s', letterSpacing: '0.01em' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold)' }}>
+            Reservar →
+          </a>
         </div>
         {/* Hamburguesa (solo móvil) */}
         <button
@@ -880,35 +850,11 @@ export default function LandingPage() {
               </a>
             ))}
             <div style={{ borderBottom: '2.5px solid #c8c9c4', margin: '0 0 0.25rem' }} />
-            {session?.user?.role === 'CLIENT' && (
-              [['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                <Link key={href} href={href} onClick={() => setMobileMenu(false)}
-                  style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
-                  {label}
-                </Link>
-              ))
-            )}
-            {session?.user?.role && ['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(session.user.role) && (
-              <Link href="/admin" onClick={() => setMobileMenu(false)}
-                style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
-                Panel Admin
-              </Link>
-            )}
             <div style={{ margin: '1rem 2rem 0.25rem' }}>
-              {!session?.user ? (
-                <button onClick={() => { setMobileMenu(false); openAuth() }} style={{ width: '100%', padding: '0.75rem', background: 'var(--green-dark)', border: 'none', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Acceder / Registrarse</button>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-                  <button onClick={() => { setMobileMenu(false); setProfileOpen(true) }} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-                    {session.user.image
-                      ? <img src={session.user.image} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-dark)' }} />
-                      : <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream)', fontWeight: 700 }}>{session.user.name?.[0]?.toUpperCase() ?? '?'}</div>
-                    }
-                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-dark)' }}>{session.user.name}</span>
-                  </button>
-                  <button onClick={() => { setMobileMenu(false); signOut() }} style={{ background: 'none', border: '1px solid #d4d3c4', color: 'var(--text-mid)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, borderRadius: 6, padding: '0.4rem 0.8rem', cursor: 'pointer' }}>Salir</button>
-                </div>
-              )}
+              <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenu(false)}
+                style={{ display: 'block', width: '100%', padding: '0.75rem', background: 'var(--gold)', border: 'none', color: 'var(--green-dark)', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', fontWeight: 700, borderRadius: 8, cursor: 'pointer', textDecoration: 'none', textAlign: 'center' }}>
+                Reservar en Booksy →
+              </a>
             </div>
           </div>
         </div>
@@ -925,7 +871,7 @@ export default function LandingPage() {
           <div style={{ marginBottom: '1.5rem' }}>
             <Image src="/logo.jpeg" alt="Logo" width={90} height={90} style={{ borderRadius: 16, objectFit: 'cover', border: '3px solid var(--gold)' }} />
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.1, marginBottom: '1rem' }}>
+          <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.1, marginBottom: '1rem' }}>
             Tu mejor <span style={{ color: 'var(--gold)' }}>versión</span><br />empieza aquí
           </h1>
           <p style={{ color: 'rgba(220,230,218,0.9)', fontSize: '1.05rem', fontWeight: 300, marginBottom: '2.5rem', lineHeight: 1.7 }}>
@@ -933,13 +879,13 @@ export default function LandingPage() {
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer"
-              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--gold)', color: 'var(--green-dark)', cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '0.01em', textDecoration: 'none', display: 'inline-block' }}
+              style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.92rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--gold)', color: 'var(--green-dark)', cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '0.01em', textDecoration: 'none', display: 'inline-block' }}
               onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold)'; (e.currentTarget as HTMLAnchorElement).style.transform = '' }}>
               Reservar cita
             </a>
             <button onClick={() => document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', fontWeight: 500, padding: '0.85rem 2rem', borderRadius: 8, border: '1.5px solid rgba(210,225,210,0.4)', background: 'transparent', color: 'var(--cream)', cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.92rem', fontWeight: 500, padding: '0.85rem 2rem', borderRadius: 8, border: '1.5px solid rgba(210,225,210,0.4)', background: 'transparent', color: 'var(--cream)', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--cream)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(210,225,210,0.4)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}>
               Ver servicios
@@ -1011,7 +957,7 @@ export default function LandingPage() {
             </div>
             <div>
               <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Nuestra historia</div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 2.5vw, 2.4rem)', color: 'var(--green-dark)', marginBottom: '1.25rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
+              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.8rem, 2.5vw, 2.4rem)', color: 'var(--green-dark)', marginBottom: '1.25rem', lineHeight: 1.2 }}>Tradición y estilo<br />en cada corte</h2>
               <p style={{ fontSize: '0.95rem', color: 'var(--text-mid)', lineHeight: 1.75, marginBottom: '1rem' }}>
                 En Nickelao Barber llevamos más de 8 años cuidando la imagen de nuestros clientes en Foz y Mondoñedo. Combinamos técnicas clásicas de barbería con las últimas tendencias para que cada visita sea una experiencia, no solo un servicio.
               </p>
@@ -1024,7 +970,7 @@ export default function LandingPage() {
               <div style={{ display: 'flex', gap: '2rem', marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--cream-mid)' }}>
                 {[{ n: '8+', label: 'Años de experiencia' }, { n: '2', label: 'Locales en Galicia' }, { n: '15+', label: 'Servicios disponibles' }].map(s => (
                   <div key={s.n}>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', fontWeight: 700, color: 'var(--green-dark)', lineHeight: 1 }}>{s.n}</div>
+                    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem', fontWeight: 700, color: 'var(--green-dark)', lineHeight: 1 }}>{s.n}</div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '0.25rem', fontWeight: 500 }}>{s.label}</div>
                   </div>
                 ))}
@@ -1039,11 +985,11 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ marginBottom: '3rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Habla con nosotros</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)' }}>Contacto</h2>
+            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)' }}>Contacto</h2>
           </div>
           <div className="landing-contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
             <div>
-              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.3rem', color: 'var(--green-dark)', marginBottom: '1.5rem' }}>Encuéntranos</h3>
+              <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: 'var(--green-dark)', marginBottom: '1.5rem' }}>Encuéntranos</h3>
               {[
                 { icon: <IconLocation />, label: 'Dirección', value: 'Foz - Av. da Mariña, 26\nMondoñedo - Praza da Catedral, 13' },
                 { icon: <IconMail />, label: 'Email', value: 'nickelaobarbershop@gmail.com' },
@@ -1071,15 +1017,15 @@ export default function LandingPage() {
                 <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   <label style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>{f.label}</label>
                   <input type={f.type} placeholder={f.placeholder} value={contactForm[f.key as keyof typeof contactForm]} onChange={e => setContactForm(cf => ({ ...cf, [f.key]: e.target.value }))}
-                    style={{ padding: '0.75rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none', resize: 'none' }} />
+                    style={{ padding: '0.75rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'var(--cream)', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none', resize: 'none' }} />
                 </div>
               ))}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 <label style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>Mensaje</label>
                 <textarea rows={5} placeholder="¿En qué podemos ayudarte?" value={contactForm.msg} onChange={e => setContactForm(cf => ({ ...cf, msg: e.target.value }))}
-                  style={{ padding: '0.75rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none', resize: 'none' }} />
+                  style={{ padding: '0.75rem 1rem', borderRadius: 8, border: '1.5px solid #cccbba', background: 'var(--cream)', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', color: 'var(--text-dark)', outline: 'none', resize: 'none' }} />
               </div>
-              <button type="submit" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--green-dark)', color: 'var(--cream)', cursor: 'pointer', alignSelf: 'flex-start', transition: 'all 0.2s' }}>
+              <button type="submit" style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--green-dark)', color: 'var(--cream)', cursor: 'pointer', alignSelf: 'flex-start', transition: 'all 0.2s' }}>
                 {contactSent ? '✓ Mensaje enviado' : 'Enviar mensaje'}
               </button>
             </form>
@@ -1093,7 +1039,7 @@ export default function LandingPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Image src="/logo.jpeg" alt="Logo" width={38} height={38} style={{ borderRadius: 8, objectFit: 'cover', border: '2px solid var(--gold-dark)' }} />
-              <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.05rem', fontWeight: 700, color: 'var(--cream)' }}>Nickelao Barber</span>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.05rem', fontWeight: 700, color: 'var(--cream)' }}>Nickelao Barber</span>
             </div>
             <p style={{ fontSize: '0.82rem', lineHeight: 1.6 }}>Barbería profesional donde la tradición<br />y el estilo se encuentran.</p>
             <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(80,110,80,0.4)' }}>
@@ -1152,14 +1098,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
-      {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
-      {showCompleteProfile && session?.user?.name && (
-        <CompleteProfileModal
-          name={session.user.name}
-          onDone={() => setShowCompleteProfile(false)}
-        />
-      )}
     </>
   )
 }
