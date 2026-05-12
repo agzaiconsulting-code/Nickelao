@@ -1,17 +1,15 @@
 import type { Metadata } from 'next'
-import { Bebas_Neue, Barlow } from 'next/font/google'
+import { Playfair_Display, DM_Sans } from 'next/font/google'
 import './globals.css'
 
-const bebasNeue = Bebas_Neue({
+const playfair = Playfair_Display({
   subsets: ['latin'],
-  weight: '400',
-  variable: '--font-heading',
+  variable: '--font-playfair',
 })
 
-const barlow = Barlow({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-body',
+  variable: '--font-dm-sans',
 })
 
 export const metadata: Metadata = {
@@ -22,7 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body className={`${bebasNeue.variable} ${barlow.variable}`}>
+      <body className={`${playfair.variable} ${dmSans.variable}`}>
         {children}
       </body>
     </html>

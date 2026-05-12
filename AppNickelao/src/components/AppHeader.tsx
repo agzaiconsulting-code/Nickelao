@@ -46,14 +46,14 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
             {mobileMenuExtra ? (
               mobileMenuExtra.map(item => (
                 <button key={item.label} onClick={item.onClick}
-                  style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: 'none', background: item.active ? 'rgba(30,42,39,0.1)' : 'transparent', color: item.active ? 'var(--green-dark)' : 'var(--text-mid)', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s' }}>
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: 'none', background: item.active ? 'rgba(30,42,39,0.1)' : 'transparent', color: item.active ? 'var(--green-dark)' : 'var(--text-mid)', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s' }}>
                   {item.label}
                 </button>
               ))
             ) : (
               <>
                 {isBarber && (
-                  <Link href="/admin" style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                  <Link href="/admin" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
                     Panel Admin
@@ -61,7 +61,7 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
                 )}
                 {user?.role === 'CLIENT' && (
                   [['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                    <Link key={href} href={href} style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                    <Link key={href} href={href} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
                       onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
                       onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
                       {label}
@@ -85,7 +85,7 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
               </button>
             ) : (
               <button onClick={() => signIn('google')}
-                style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.45rem 1.25rem', borderRadius: 6, border: '1.5px solid var(--green-dark)', color: 'var(--green-dark)', background: 'transparent', cursor: 'pointer', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
+                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, padding: '0.45rem 1.25rem', borderRadius: 6, border: '1.5px solid var(--green-dark)', color: 'var(--green-dark)', background: 'transparent', cursor: 'pointer', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--green-dark)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--cream)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--green-dark)' }}>
                 Acceder
@@ -129,7 +129,7 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
             {mobileMenuExtra ? (
               mobileMenuExtra.map(item => (
                 <button key={item.label} onClick={() => { setMobileMenu(false); item.onClick() }}
-                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', background: item.active ? 'var(--sage-light)' : 'none', border: 'none', borderBottom: '1px solid var(--cream-mid)', cursor: 'pointer', fontFamily: "'Barlow', sans-serif" }}>
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--green-dark)', background: item.active ? 'var(--sage-light)' : 'none', border: 'none', borderBottom: '1px solid var(--cream-mid)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                   {item.label}
                 </button>
               ))
@@ -144,7 +144,7 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
             <div style={{ padding: '1rem 2rem' }}>
               {!user ? (
                 <button onClick={() => { setMobileMenu(false); signIn('google') }}
-                  style={{ width: '100%', padding: '0.75rem', background: 'var(--green-dark)', border: 'none', color: 'var(--cream)', fontFamily: "'Barlow', sans-serif", fontSize: '0.88rem', fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>
+                  style={{ width: '100%', padding: '0.75rem', background: 'var(--green-dark)', border: 'none', color: 'var(--cream)', fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>
                   Acceder / Registrarse
                 </button>
               ) : (

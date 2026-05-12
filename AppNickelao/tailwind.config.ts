@@ -20,8 +20,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['var(--font-heading)', 'sans-serif'],
-        sans:    ['var(--font-body)', 'sans-serif'],
+        display: ['var(--font-playfair)', 'serif'],
+        sans:    ['var(--font-dm-sans)', 'sans-serif'],
       },
     },
   },
