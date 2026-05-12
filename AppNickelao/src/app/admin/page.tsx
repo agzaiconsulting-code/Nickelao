@@ -419,6 +419,220 @@ function BlockClientModal({ onClose, onSuccess }: { onClose: () => void; onSucce
   )
 }
 
+// ── DashboardSection ──────────────────────────────────────────────────────────
+
+type DashboardData = {
+  clients: { total: number; newThisMonth: number; blocked: number }
+  appointments: {
+    thisMonth: number; lastMonth: number; monthGrowth: number | null
+    cancellationRate: number; byStatus: Record<string, number>; byLocation: Record<string, number>
+  }
+  topServices: { name: string; count: number }[]
+  barbers: { name: string; location: string; isActive: boolean; appts: number }[]
+  totalPoints: number
+  recentActivity: { id: string; startTime: string; status: string; client: { name: string | null }; service: { name: string }; barber: { location: string; user: { name: string | null } } }[]
+}
+
+const STATUS_LABEL: Record<string, string> = { CONFIRMED: 'Confirmadas', COMPLETED: 'Completadas', CANCELLED: 'Canceladas', NO_SHOW: 'No asistió' }
+const STATUS_COLOR: Record<string, string> = { CONFIRMED: '#547832', COMPLETED: '#1E2A27', CANCELLED: '#c0392b', NO_SHOW: '#F2C230' }
+
+function KpiCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) {
+  return (
+    <div style={{ background: '#fff', borderRadius: 14, padding: '1.25rem 1.5rem', border: '1px solid #e0dfd0', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A7A8A3' }}>{label}</span>
+      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem', color: accent ?? '#1E2A27', lineHeight: 1.1 }}>{value}</span>
+      {sub && <span style={{ fontSize: '0.75rem', color: '#A7A8A3' }}>{sub}</span>}
+    </div>
+  )
+}
+
+function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1E2A27' }}>{label}</span>
+        <span style={{ fontSize: '0.82rem', fontWeight: 700, color }}>{value}</span>
+      </div>
+      <div style={{ height: 6, borderRadius: 99, background: '#f0efe1', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 99, transition: 'width 0.6s ease' }} />
+      </div>
+    </div>
+  )
+}
+
+function DashboardSection() {
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/admin/dashboard')
+      .then(r => r.ok ? r.json() : null)
+      .then(setData)
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <div style={{ color: '#A7A8A3', fontSize: '0.9rem', textAlign: 'center', padding: '4rem 0' }}>Cargando…</div>
+  if (!data) return <div style={{ color: '#c0392b', textAlign: 'center', padding: '4rem 0' }}>Error al cargar el dashboard</div>
+
+  const totalApptStatus = Object.values(data.appointments.byStatus).reduce((a, b) => a + b, 0)
+  const maxService = data.topServices[0]?.count ?? 1
+  const maxBarber = Math.max(...data.barbers.map(b => b.appts), 1)
+  const totalByLocation = (data.appointments.byLocation.FOZ ?? 0) + (data.appointments.byLocation.MONDONEDO ?? 0)
+
+  return (
+    <div style={{ padding: '2rem', maxWidth: 960, margin: '0 auto', fontFamily: "'Barlow', sans-serif" }}>
+
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #1E2A27 0%, #2d3f3b 100%)', borderRadius: 16, padding: '1.75rem 2rem', marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#F5F4E6', letterSpacing: '0.04em' }}>Dashboard</div>
+          <div style={{ fontSize: '0.8rem', color: '#A7A8A3', marginTop: 2 }}>
+            {new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })} · Solo visible para administrador general
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', color: '#F2C230' }}>{data.totalPoints.toLocaleString('es-ES')}</div>
+            <div style={{ fontSize: '0.7rem', color: '#A7A8A3', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NickPoints totales</div>
+          </div>
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+        <KpiCard label="Clientes registrados" value={data.clients.total}
+          sub={`+${data.clients.newThisMonth} este mes`} />
+        <KpiCard label="Citas este mes" value={data.appointments.thisMonth}
+          sub={data.appointments.monthGrowth !== null ? `${data.appointments.monthGrowth >= 0 ? '+' : ''}${data.appointments.monthGrowth}% vs mes anterior` : undefined} />
+        <KpiCard label="Tasa cancelación" value={`${data.appointments.cancellationRate}%`}
+          accent={data.appointments.cancellationRate > 20 ? '#c0392b' : data.appointments.cancellationRate > 10 ? '#F2C230' : '#547832'} />
+        <KpiCard label="Clientes bloqueados" value={data.clients.blocked}
+          accent={data.clients.blocked > 0 ? '#c0392b' : '#1E2A27'} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+
+        {/* Citas por estado */}
+        <div style={{ background: '#fff', borderRadius: 14, padding: '1.25rem 1.5rem', border: '1px solid #e0dfd0' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A7A8A3', marginBottom: '1rem' }}>Citas por estado este mes</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+            {['CONFIRMED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'].map(s => (
+              <MiniBar key={s}
+                label={STATUS_LABEL[s]}
+                value={data.appointments.byStatus[s] ?? 0}
+                max={totalApptStatus || 1}
+                color={STATUS_COLOR[s]} />
+            ))}
+          </div>
+        </div>
+
+        {/* Por local */}
+        <div style={{ background: '#fff', borderRadius: 14, padding: '1.25rem 1.5rem', border: '1px solid #e0dfd0' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A7A8A3', marginBottom: '1rem' }}>Citas por local este mes</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem', marginBottom: '1.25rem' }}>
+            {(['FOZ', 'MONDONEDO'] as const).map(loc => (
+              <MiniBar key={loc}
+                label={loc === 'FOZ' ? 'Foz' : 'Mondoñedo'}
+                value={data.appointments.byLocation[loc] ?? 0}
+                max={totalByLocation || 1}
+                color={loc === 'FOZ' ? '#1E2A27' : '#547832'} />
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+            {(['FOZ', 'MONDONEDO'] as const).map(loc => {
+              const v = data.appointments.byLocation[loc] ?? 0
+              const pct = totalByLocation > 0 ? Math.round((v / totalByLocation) * 100) : 0
+              return (
+                <div key={loc} style={{ flex: 1, background: loc === 'FOZ' ? '#1E2A27' : '#f0f6e8', borderRadius: 10, padding: '0.75rem', textAlign: 'center' }}>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: loc === 'FOZ' ? '#F2C230' : '#547832' }}>{pct}%</div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 600, color: loc === 'FOZ' ? '#A7A8A3' : '#547832' }}>{loc === 'FOZ' ? 'Foz' : 'Mondoñedo'}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+
+        {/* Top servicios */}
+        <div style={{ background: '#fff', borderRadius: 14, padding: '1.25rem 1.5rem', border: '1px solid #e0dfd0' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A7A8A3', marginBottom: '1rem' }}>Servicios más solicitados (mes)</div>
+          {data.topServices.length === 0
+            ? <div style={{ color: '#A7A8A3', fontSize: '0.85rem' }}>Sin datos</div>
+            : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+                {data.topServices.map((s, i) => (
+                  <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 6, background: i === 0 ? '#F2C230' : i === 1 ? '#e0dfd0' : '#f5f4e6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1E2A27', flexShrink: 0 }}>{i + 1}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E2A27', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
+                      <div style={{ height: 4, borderRadius: 99, background: '#f0efe1', marginTop: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${Math.round((s.count / maxService) * 100)}%`, background: i === 0 ? '#F2C230' : '#547832', borderRadius: 99 }} />
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1E2A27', flexShrink: 0 }}>{s.count}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+        </div>
+
+        {/* Actividad por peluquero */}
+        <div style={{ background: '#fff', borderRadius: 14, padding: '1.25rem 1.5rem', border: '1px solid #e0dfd0' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A7A8A3', marginBottom: '1rem' }}>Citas por peluquero (mes)</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {data.barbers.map(b => (
+              <div key={b.name} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: b.isActive ? '#1E2A27' : '#e0dfd0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: b.isActive ? '#F2C230' : '#A7A8A3', fontSize: '0.85rem', fontWeight: 700, flexShrink: 0 }}>
+                  {(b.name[0] ?? '?').toUpperCase()}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E2A27' }}>{b.name}</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#547832' }}>{b.appts}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: 3 }}>
+                    <div style={{ flex: 1, height: 4, borderRadius: 99, background: '#f0efe1', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${Math.round((b.appts / maxBarber) * 100)}%`, background: '#547832', borderRadius: 99 }} />
+                    </div>
+                    <span style={{ fontSize: '0.65rem', color: '#A7A8A3', whiteSpace: 'nowrap' }}>{b.location === 'FOZ' ? 'Foz' : 'Mondoñedo'} · {b.isActive ? 'Activo' : 'Inactivo'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Actividad reciente */}
+      <div style={{ background: '#fff', borderRadius: 14, padding: '1.25rem 1.5rem', border: '1px solid #e0dfd0' }}>
+        <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A7A8A3', marginBottom: '1rem' }}>Actividad reciente</div>
+        {data.recentActivity.length === 0
+          ? <div style={{ color: '#A7A8A3', fontSize: '0.85rem' }}>Sin actividad reciente</div>
+          : (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {data.recentActivity.map((a, i) => (
+                <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.65rem 0', borderBottom: i < data.recentActivity.length - 1 ? '1px solid #f0efe1' : 'none' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: STATUS_COLOR[a.status] ?? '#A7A8A3', flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1E2A27' }}>{a.client.name ?? '—'}</span>
+                    <span style={{ fontSize: '0.82rem', color: '#A7A8A3' }}> · {a.service.name}</span>
+                  </div>
+                  <span style={{ fontSize: '0.75rem', color: '#A7A8A3', flexShrink: 0 }}>{a.barber.user.name ?? '—'} · {a.barber.location === 'FOZ' ? 'Foz' : 'Mondoñedo'}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#A7A8A3', flexShrink: 0 }}>
+                    {new Date(a.startTime).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+      </div>
+    </div>
+  )
+}
+
 // ── Sections ─────────────────────────────────────────────────────────────────
 
 function BlockedSection() {
@@ -579,7 +793,7 @@ function ConfigSection({ role }: { role: string }) {
 export default function AdminPage() {
   const router = useRouter()
   const [session, setSession] = useState<{ user: { name?: string | null; image?: string | null; role?: string } } | null>(null)
-  const [activeSection, setActiveSection] = useState<'calendario' | 'bloqueados' | 'configuracion'>('calendario')
+  const [activeSection, setActiveSection] = useState<'calendario' | 'bloqueados' | 'configuracion' | 'dashboard'>('calendario')
   const [local, setLocal] = useState('Foz')
   const [today] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(() => new Date())
@@ -647,10 +861,12 @@ export default function AdminPage() {
     setWeekStart(getMonday(d))
   }
 
-  const tabs: { key: 'calendario' | 'bloqueados' | 'configuracion'; label: string }[] = [
+  const role = session?.user.role ?? ''
+  const tabs: { key: 'calendario' | 'bloqueados' | 'configuracion' | 'dashboard'; label: string }[] = [
     { key: 'calendario', label: 'Calendario' },
     { key: 'bloqueados', label: 'Bloqueados' },
     { key: 'configuracion', label: 'Configuración' },
+    ...(role === 'ADMIN_GENERAL' ? [{ key: 'dashboard' as const, label: 'Dashboard' }] : []),
   ]
 
   const adminMobileItems = tabs.map(t => ({
@@ -832,7 +1048,8 @@ export default function AdminPage() {
       )}
 
       <div style={{ display: activeSection === 'bloqueados' ? undefined : 'none' }}><BlockedSection /></div>
-      <div style={{ display: activeSection === 'configuracion' ? undefined : 'none' }}><ConfigSection role={session?.user.role ?? ''} /></div>
+      <div style={{ display: activeSection === 'configuracion' ? undefined : 'none' }}><ConfigSection role={role} /></div>
+      {activeSection === 'dashboard' && role === 'ADMIN_GENERAL' && <DashboardSection />}
 
       {showMonthPicker && (
         <MonthPicker
