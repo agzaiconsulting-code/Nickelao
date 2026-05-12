@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { rateLimit, getIp } from '@/lib/rateLimit'
 
 export async function GET() {
   const user = await getCurrentUser()
@@ -23,7 +24,13 @@ export async function GET() {
   return NextResponse.json(appointments)
 }
 
+const MAX_FUTURE_DAYS = 90
+
 export async function POST(req: Request) {
+  if (!rateLimit(getIp(req), 10, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -45,6 +52,10 @@ export async function POST(req: Request) {
   }
   if (start.getTime() <= Date.now()) {
     return NextResponse.json({ error: 'Cannot book in the past' }, { status: 400 })
+  }
+  const maxDate = new Date(Date.now() + MAX_FUTURE_DAYS * 24 * 60 * 60 * 1000)
+  if (start > maxDate) {
+    return NextResponse.json({ error: `Cannot book more than ${MAX_FUTURE_DAYS} days in advance` }, { status: 400 })
   }
 
   const service = await prisma.service.findUnique({ where: { id: serviceId } })

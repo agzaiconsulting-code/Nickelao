@@ -14,6 +14,13 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const block = await prisma.unavailabilityBlock.findUnique({ where: { id } })
   if (!block) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  if (user.role === 'BARBER') {
+    const barber = await prisma.barber.findUnique({ where: { userId: user.id } })
+    if (!barber || block.barberId !== barber.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+  }
+
   await prisma.unavailabilityBlock.delete({ where: { id } })
   return NextResponse.json({ ok: true })
 }

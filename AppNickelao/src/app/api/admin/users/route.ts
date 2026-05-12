@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url)
-  const q = searchParams.get('q') ?? ''
+  const q = (searchParams.get('q') ?? '').slice(0, 100)
   const blockedOnly = searchParams.get('blocked') === 'true'
 
   // Listing blocked users is admin-only

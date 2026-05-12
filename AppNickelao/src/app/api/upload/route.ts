@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getCurrentUser } from '@/lib/auth'
+import { rateLimit, getIp } from '@/lib/rateLimit'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif'])
 
 export async function POST(req: Request) {
+  if (!rateLimit(getIp(req), 10, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -29,7 +35,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid file type. Allowed: jpeg, png, webp, gif' }, { status: 400 })
   }
 
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  const rawExt = (file.name.split('.').pop() ?? '').toLowerCase()
+  const ext = ALLOWED_EXTENSIONS.has(rawExt) ? rawExt : 'jpg'
   const path = `portfolio/${user.id}/${Date.now()}.${ext}`
   const buffer = Buffer.from(await file.arrayBuffer())
 

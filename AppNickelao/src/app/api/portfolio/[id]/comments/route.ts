@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { rateLimit, getIp } from '@/lib/rateLimit'
 
 const MAX_COMMENT_LENGTH = 500
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!rateLimit(getIp(req), 20, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

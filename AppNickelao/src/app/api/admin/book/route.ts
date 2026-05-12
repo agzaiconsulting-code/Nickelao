@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { rateLimit, getIp } from '@/lib/rateLimit'
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(getIp(req), 30, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(user.role)) {
@@ -39,6 +44,12 @@ export async function POST(req: NextRequest) {
       const barber = await tx.barber.findUnique({ where: { id: barberId } })
       if (!barber || !barber.isActive) throw Object.assign(new Error('barber_unavailable'), { code: 400 })
 
+      // BARBERs can only book on their own calendar
+      if (user.role === 'BARBER') {
+        const ownBarber = await tx.barber.findUnique({ where: { userId: user.id } })
+        if (!ownBarber || ownBarber.id !== barberId) throw Object.assign(new Error('forbidden'), { code: 403 })
+      }
+
       const conflict = await tx.appointment.findFirst({
         where: {
           barberId,
@@ -70,6 +81,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(appointment, { status: 201 })
   } catch (err: unknown) {
     const e = err as Error
+    if (e.message === 'forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     if (e.message === 'barber_unavailable') return NextResponse.json({ error: 'Barber unavailable' }, { status: 400 })
     if (e.message === 'slot_taken') return NextResponse.json({ error: 'Slot no longer available' }, { status: 409 })
     throw err
