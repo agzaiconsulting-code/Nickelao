@@ -708,9 +708,66 @@ function BlockedSection() {
   )
 }
 
+// ── AddBarberModal ────────────────────────────────────────────────────────────
+
+function AddBarberModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [location, setLocation] = useState<'FOZ' | 'MONDONEDO'>('FOZ')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleAdd() {
+    if (!name.trim() || !email.trim()) { setError('Nombre y email son obligatorios'); return }
+    setSaving(true); setError('')
+    try {
+      const res = await fetch('/api/admin/barbers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), location }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Error al crear peluquero'); return }
+      onSuccess(); onClose()
+    } finally { setSaving(false) }
+  }
+
+  return (
+    <div onClick={e => e.target === e.currentTarget && onClose()}
+      className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(16,26,22,0.55)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#fff', borderRadius: 16, padding: '1.75rem', width: 'min(420px, 96vw)', boxShadow: '0 24px 64px rgba(16,26,22,0.25)', fontFamily: "'Barlow', sans-serif" }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#1E2A27', margin: 0 }}>Añadir peluquero</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#999' }}>✕</button>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <input value={name} onChange={e => setName(e.target.value)} placeholder="Nombre completo"
+            style={{ padding: '0.6rem 0.85rem', borderRadius: 8, border: '1.5px solid #e0dfd0', fontSize: '0.88rem', outline: 'none' }} />
+          <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email (usará para iniciar sesión con Google)" type="email"
+            style={{ padding: '0.6rem 0.85rem', borderRadius: 8, border: '1.5px solid #e0dfd0', fontSize: '0.88rem', outline: 'none' }} />
+          <select value={location} onChange={e => setLocation(e.target.value as 'FOZ' | 'MONDONEDO')}
+            style={{ padding: '0.6rem 0.85rem', borderRadius: 8, border: '1.5px solid #e0dfd0', fontSize: '0.88rem', background: '#fff', outline: 'none' }}>
+            <option value="FOZ">Foz</option>
+            <option value="MONDONEDO">Mondoñedo</option>
+          </select>
+          {error && <div style={{ fontSize: '0.82rem', color: '#c0392b', padding: '0.4rem 0.6rem', background: '#fff0f0', borderRadius: 6 }}>{error}</div>}
+          <div style={{ fontSize: '0.75rem', color: '#A7A8A3', lineHeight: 1.5 }}>
+            El peluquero recibirá acceso al sistema cuando inicie sesión con Google usando este email.
+          </div>
+          <button onClick={handleAdd} disabled={saving || !name.trim() || !email.trim()}
+            style={{ padding: '0.75rem', borderRadius: 8, border: 'none', background: !name.trim() || !email.trim() ? '#e0dfd0' : '#1E2A27', color: !name.trim() || !email.trim() ? '#A7A8A3' : '#F5F4E6', fontWeight: 600, fontSize: '0.88rem', cursor: !name.trim() || !email.trim() ? 'not-allowed' : 'pointer' }}>
+            {saving ? 'Creando…' : 'Crear peluquero'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ConfigSection({ role }: { role: string }) {
   const [barbers, setBarbers] = useState<BarberConfig[]>([])
   const [loading, setLoading] = useState(true)
+  const [showAddBarber, setShowAddBarber] = useState(false)
   const canToggle = role === 'ADMIN_GENERAL'
 
   function load() {
@@ -776,7 +833,15 @@ function ConfigSection({ role }: { role: string }) {
 
   return (
     <div style={{ padding: '2rem', maxWidth: 800, margin: '0 auto' }}>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#1E2A27', marginBottom: '1.5rem' }}>Configuración</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#1E2A27', margin: 0 }}>Configuración</h2>
+        {canToggle && (
+          <button onClick={() => setShowAddBarber(true)}
+            style={{ padding: '0.5rem 1.1rem', borderRadius: 8, border: 'none', background: '#1E2A27', color: '#F5F4E6', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            + Añadir peluquero
+          </button>
+        )}
+      </div>
       {loading ? (
         <div style={{ color: '#A7A8A3', fontSize: '0.9rem', textAlign: 'center', padding: '3rem 0' }}>Cargando…</div>
       ) : (
@@ -795,6 +860,7 @@ function ConfigSection({ role }: { role: string }) {
           </div>
         </div>
       )}
+      {showAddBarber && <AddBarberModal onClose={() => setShowAddBarber(false)} onSuccess={load} />}
     </div>
   )
 }
@@ -819,6 +885,7 @@ export default function AdminPage() {
   const [showMonthPicker, setShowMonthPicker] = useState(false)
   const [monthAnchor, setMonthAnchor] = useState<DOMRect | null>(null)
   const [barbers, setBarbers] = useState<BarberInfo[]>([])
+  const [selectedBarberIds, setSelectedBarberIds] = useState<string[]>([])
   const [appointments, setAppointments] = useState<ApptData[]>([])
   const [blocks, setBlocks] = useState<BlockData[]>([])
   const [loading, setLoading] = useState(false)
@@ -839,7 +906,9 @@ export default function AdminPage() {
       if (!sessionData?.user) { router.push('/'); return }
       if (!['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(sessionData.user.role)) { router.push('/'); return }
       setSession(sessionData)
-      setBarbers(calData.barbers ?? [])
+      const newBarbers: BarberInfo[] = calData.barbers ?? []
+      setBarbers(newBarbers)
+      setSelectedBarberIds(newBarbers.slice(0, 2).map((b: BarberInfo) => b.id))
       setAppointments(calData.appointments ?? [])
       setBlocks(calData.blocks ?? [])
       setLoading(false)
@@ -853,7 +922,16 @@ export default function AdminPage() {
     setLoading(true)
     fetch(`/api/admin/appointments?date=${toDateStr(selectedDate)}&location=${LOCATION_MAP[local]}`)
       .then(r => r.ok ? r.json() : { barbers: [], appointments: [], blocks: [] })
-      .then(data => { setBarbers(data.barbers ?? []); setAppointments(data.appointments ?? []); setBlocks(data.blocks ?? []) })
+      .then(data => {
+        const newBarbers: BarberInfo[] = data.barbers ?? []
+        setBarbers(newBarbers)
+        setSelectedBarberIds(prev => {
+          const valid = prev.filter(id => newBarbers.some(b => b.id === id))
+          return valid.length > 0 ? valid : newBarbers.slice(0, 2).map(b => b.id)
+        })
+        setAppointments(data.appointments ?? [])
+        setBlocks(data.blocks ?? [])
+      })
       .finally(() => setLoading(false))
   }, [selectedDate, local, calVersion, activeSection])
 
@@ -861,11 +939,21 @@ export default function AdminPage() {
   const isSaturday = selectedDate.getDay() === 6
   const timeRows   = getTimeRows(selectedDate)
 
+  const visibleBarbers = barbers.filter(b => selectedBarberIds.includes(b.id))
+
+  function toggleBarber(id: string) {
+    setSelectedBarberIds(prev => {
+      if (prev.includes(id)) return prev.length > 1 ? prev.filter(x => x !== id) : prev
+      if (prev.length >= 2) return prev
+      return [...prev, id]
+    })
+  }
+
   const barberAppts: Record<string, ApptData[]> = {}
-  barbers.forEach(b => { barberAppts[b.id] = appointments.filter(a => a.barberId === b.id) })
+  visibleBarbers.forEach(b => { barberAppts[b.id] = appointments.filter(a => a.barberId === b.id) })
 
   const barberBlocks: Record<string, BlockData[]> = {}
-  barbers.forEach(b => { barberBlocks[b.id] = blocks.filter(bl => bl.barberId === b.id) })
+  visibleBarbers.forEach(b => { barberBlocks[b.id] = blocks.filter(bl => bl.barberId === b.id) })
 
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); return d
@@ -949,6 +1037,29 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Barber selector */}
+          {barbers.length > 0 && (
+            <div style={{ background: '#fafaf5', borderBottom: '1px solid #e0dfd0', padding: '0.5rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#A7A8A3', textTransform: 'uppercase', letterSpacing: '0.07em', marginRight: '0.25rem' }}>Ver:</span>
+              {barbers.map(b => {
+                const sel = selectedBarberIds.includes(b.id)
+                const maxReached = selectedBarberIds.length >= 2 && !sel
+                return (
+                  <button key={b.id} onClick={() => !maxReached && toggleBarber(b.id)}
+                    title={maxReached ? 'Máximo 2 peluqueros' : undefined}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', padding: '0.3rem 0.75rem', borderRadius: 100, border: '1.5px solid', borderColor: sel ? '#1E2A27' : '#d4d3c4', background: sel ? '#1E2A27' : 'transparent', color: sel ? '#F5F4E6' : '#A7A8A3', fontSize: '0.78rem', fontWeight: 600, cursor: maxReached ? 'not-allowed' : 'pointer', opacity: maxReached ? 0.4 : 1, transition: 'all 0.15s' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: sel ? '#F2C230' : '#C8C9C4', flexShrink: 0 }} />
+                    {b.name}
+                    {sel && <span style={{ fontSize: '0.65rem', color: '#F2C230' }}>✓</span>}
+                  </button>
+                )
+              })}
+              {barbers.length > 2 && (
+                <span style={{ fontSize: '0.7rem', color: '#A7A8A3', marginLeft: '0.25rem' }}>Máx. 2 a la vez</span>
+              )}
+            </div>
+          )}
+
           {/* Schedule */}
           <main style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', padding: '1rem 1.25rem 1.25rem' }}>
             {isSunday ? (
@@ -961,10 +1072,10 @@ export default function AdminPage() {
                 <span style={{ color: '#A7A8A3', fontSize: '0.9rem' }}>Cargando citas…</span>
               </div>
             ) : (
-              <div style={{ minWidth: barbers.length * 200 + 60, borderRadius: 12, overflow: 'hidden', border: '1px solid #e0dfd0', boxShadow: '0 2px 8px rgba(30,42,39,0.06)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: '2px solid #e0dfd0', background: '#fafaf5', position: 'sticky', top: 0, zIndex: 9 }}>
+              <div style={{ minWidth: visibleBarbers.length * 200 + 60, borderRadius: 12, overflow: 'hidden', border: '1px solid #e0dfd0', boxShadow: '0 2px 8px rgba(30,42,39,0.06)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `60px repeat(${visibleBarbers.length}, 1fr)`, borderBottom: '2px solid #e0dfd0', background: '#fafaf5', position: 'sticky', top: 0, zIndex: 9 }}>
                   <div style={{ borderRight: '1px solid #e0dfd0' }} />
-                  {barbers.map(b => (
+                  {visibleBarbers.map(b => (
                     <div key={b.id} style={{ padding: '0.75rem 1rem', borderRight: '1px solid #e0dfd0', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                       <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#1E2A27', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F2C230', fontSize: '0.85rem', fontWeight: 700, flexShrink: 0 }}>
                         {b.name[0]}
@@ -983,11 +1094,11 @@ export default function AdminPage() {
                   const showLabel = slotMin % 30 === 0
                   const working = isWorkingSlot(slotMin, selectedDate.getDay())
                   return (
-                    <div key={time} style={{ display: 'grid', gridTemplateColumns: `60px repeat(${barbers.length}, 1fr)`, borderBottom: showLabel ? '1px solid #eeeddf' : '1px solid #f5f4ee', background: !working ? '#f0efe6' : isNow ? '#fffbea' : '#fff', minHeight: ROW_H }}>
+                    <div key={time} style={{ display: 'grid', gridTemplateColumns: `60px repeat(${visibleBarbers.length}, 1fr)`, borderBottom: showLabel ? '1px solid #eeeddf' : '1px solid #f5f4ee', background: !working ? '#f0efe6' : isNow ? '#fffbea' : '#fff', minHeight: ROW_H }}>
                       <div style={{ padding: '0.25rem 0.4rem', borderRight: '1px solid #e0dfd0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                         {showLabel && <span style={{ fontSize: '0.7rem', fontWeight: 600, color: isNow ? '#c8960c' : '#A7A8A3' }}>{time}</span>}
                       </div>
-                      {barbers.map(b => {
+                      {visibleBarbers.map(b => {
                         const appt = barberAppts[b.id]?.find(a => {
                           const aStart = timeToMin(isoToHHMM(a.startTime))
                           const aEnd   = timeToMin(isoToHHMM(a.endTime))
