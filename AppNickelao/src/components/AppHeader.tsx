@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { signIn } from 'next-auth/react'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import ProfileModal from './ProfileModal'
 
 type SessionUser = { name?: string | null; image?: string | null; role?: string }
@@ -18,8 +19,16 @@ const NAV_LINKS = [
 
 export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUser?: SessionUser | null; mobileMenuExtra?: MobileMenuExtra[] }) {
   const user = initialUser ?? null
+  const router = useRouter()
   const [mobileMenu, setMobileMenu] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
+
+  const navigate = useCallback((href: string) => {
+    setMobileMenu(false)
+    setTransitioning(true)
+    setTimeout(() => router.push(href), 320)
+  }, [router])
 
   const isBarber = user?.role && ['BARBER', 'ADMIN_SHOP', 'ADMIN_GENERAL'].includes(user.role)
 
@@ -53,19 +62,21 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
             ) : (
               <>
                 {isBarber && (
-                  <Link href="/admin" style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--gold-dark)' }}>
+                  <button onClick={() => navigate('/admin')}
+                    style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 1rem', borderRadius: 6, border: '1.5px solid var(--gold-dark)', color: 'var(--gold-dark)', background: 'transparent', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--cream)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--gold-dark)' }}>
                     Panel Admin
-                  </Link>
+                  </button>
                 )}
                 {user?.role === 'CLIENT' && (
                   [['Mis citas', '/mis-citas'], ['Portfolio', '/portfolio']].map(([label, href]) => (
-                    <Link key={href} href={href} style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--green)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green)' }}>
+                    <button key={href} onClick={() => navigate(href)}
+                      style={{ fontFamily: "'Barlow', sans-serif", fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.9rem', borderRadius: 6, border: '1.5px solid var(--green)', color: 'var(--green)', background: 'transparent', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.18s' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--green)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--cream)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--green)' }}>
                       {label}
-                    </Link>
+                    </button>
                   ))
                 )}
               </>
@@ -135,10 +146,10 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
               ))
             ) : (
               isBarber && (
-                <Link href="/admin" onClick={() => setMobileMenu(false)}
-                  style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
+                <button onClick={() => navigate('/admin')}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dark)', background: 'none', border: 'none', borderBottom: '1px solid var(--cream-mid)', cursor: 'pointer', fontFamily: "'Barlow', sans-serif" }}>
                   Panel Admin
-                </Link>
+                </button>
               )
             )}
             <div style={{ padding: '1rem 2rem' }}>
@@ -165,6 +176,24 @@ export default function AppHeader({ initialUser, mobileMenuExtra }: { initialUse
       )}
 
       {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
+
+      {/* Transition overlay */}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: '#1E2A27',
+        pointerEvents: transitioning ? 'all' : 'none',
+        opacity: transitioning ? 1 : 0,
+        transition: transitioning ? 'opacity 0.28s ease-in' : 'opacity 0.2s ease-out',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {transitioning && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ width: 48, height: 48, border: '3px solid rgba(242,194,48,0.2)', borderTop: '3px solid #F2C230', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1rem', letterSpacing: '0.15em', color: '#F2C230' }}>CARGANDO</span>
+          </div>
+        )}
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
     </>
   )
 }
