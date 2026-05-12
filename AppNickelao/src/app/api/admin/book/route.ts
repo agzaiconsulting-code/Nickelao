@@ -16,26 +16,62 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  const service = await prisma.service.findUnique({ where: { id: serviceId } })
-  if (!service) return NextResponse.json({ error: 'Service not found' }, { status: 404 })
-
   const start = new Date(startTime)
+  if (isNaN(start.getTime())) {
+    return NextResponse.json({ error: 'Invalid startTime' }, { status: 400 })
+  }
+
+  const [client, service] = await Promise.all([
+    prisma.user.findUnique({ where: { id: clientId }, select: { id: true, role: true } }),
+    prisma.service.findUnique({ where: { id: serviceId } }),
+  ])
+
+  if (!client || client.role !== 'CLIENT') {
+    return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+  }
+  if (!service) return NextResponse.json({ error: 'Service not found' }, { status: 404 })
+  if (!service.isActive) return NextResponse.json({ error: 'Service unavailable' }, { status: 400 })
+
   const end = new Date(start.getTime() + service.duration * 60 * 1000)
 
-  const appointment = await prisma.appointment.create({
-    data: {
-      clientId,
-      barberId,
-      serviceId,
-      startTime: start,
-      endTime: end,
-      status: 'CONFIRMED',
-    },
-    include: {
-      client: { select: { name: true } },
-      service: { select: { name: true } },
-    },
-  })
+  try {
+    const appointment = await prisma.$transaction(async (tx) => {
+      const barber = await tx.barber.findUnique({ where: { id: barberId } })
+      if (!barber || !barber.isActive) throw Object.assign(new Error('barber_unavailable'), { code: 400 })
 
-  return NextResponse.json(appointment, { status: 201 })
+      const conflict = await tx.appointment.findFirst({
+        where: {
+          barberId,
+          status: { not: 'CANCELLED' },
+          startTime: { lt: end },
+          endTime: { gt: start },
+        },
+      })
+      if (conflict) throw Object.assign(new Error('slot_taken'), { code: 409 })
+
+      const block = await tx.unavailabilityBlock.findFirst({
+        where: {
+          barberId,
+          startTime: { lt: end },
+          endTime: { gt: start },
+        },
+      })
+      if (block) throw Object.assign(new Error('slot_taken'), { code: 409 })
+
+      return await tx.appointment.create({
+        data: { clientId, barberId, serviceId, startTime: start, endTime: end, status: 'CONFIRMED' },
+        include: {
+          client: { select: { name: true } },
+          service: { select: { name: true } },
+        },
+      })
+    })
+
+    return NextResponse.json(appointment, { status: 201 })
+  } catch (err: unknown) {
+    const e = err as Error
+    if (e.message === 'barber_unavailable') return NextResponse.json({ error: 'Barber unavailable' }, { status: 400 })
+    if (e.message === 'slot_taken') return NextResponse.json({ error: 'Slot no longer available' }, { status: 409 })
+    throw err
+  }
 }

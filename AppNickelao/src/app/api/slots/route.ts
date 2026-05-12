@@ -13,12 +13,13 @@ export async function GET(req: Request) {
 
   if (!barberIdsStr || !dateStr || duration <= 0) return NextResponse.json([])
 
+  const date = new Date(`${dateStr}T00:00:00.000Z`)
+  if (isNaN(date.getTime())) return NextResponse.json([])
+
   const barberIds = barberIdsStr.split(',').filter(Boolean)
-  const date      = new Date(`${dateStr}T00:00:00.000Z`)
   const dayStart  = new Date(`${dateStr}T00:00:00.000Z`)
   const dayEnd    = new Date(`${dateStr}T23:59:59.999Z`)
 
-  // Collect all available barbers per time slot
   const slotMap: Record<string, string[]> = {}
 
   for (const barberId of barberIds) {
@@ -45,7 +46,6 @@ export async function GET(req: Request) {
     }
   }
 
-  // Randomly assign one available barber per slot
   const result = Object.entries(slotMap).map(([time, ids]) => ({
     time,
     barberId: ids[Math.floor(Math.random() * ids.length)],

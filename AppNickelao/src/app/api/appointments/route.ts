@@ -39,22 +39,71 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
+  const start = new Date(startTime)
+  if (isNaN(start.getTime())) {
+    return NextResponse.json({ error: 'Invalid startTime' }, { status: 400 })
+  }
+  if (start.getTime() <= Date.now()) {
+    return NextResponse.json({ error: 'Cannot book in the past' }, { status: 400 })
+  }
+
   const service = await prisma.service.findUnique({ where: { id: serviceId } })
   if (!service) return NextResponse.json({ error: 'Service not found' }, { status: 404 })
+  if (!service.isActive) return NextResponse.json({ error: 'Service unavailable' }, { status: 400 })
 
-  const start = new Date(startTime)
   const end = new Date(start.getTime() + service.duration * 60_000)
 
-  const appointment = await prisma.appointment.create({
-    data: { clientId: user.id, barberId, serviceId, startTime: start, endTime: end, status: 'CONFIRMED', autoAssigned: !!autoAssigned },
-    include: {
-      service: true,
-      barber: { include: { user: { select: { name: true } } } },
-    },
-  })
+  try {
+    const appointment = await prisma.$transaction(async (tx) => {
+      const barber = await tx.barber.findUnique({ where: { id: barberId } })
+      if (!barber || !barber.isActive) throw Object.assign(new Error('barber_unavailable'), { code: 400 })
 
-  await prisma.pointsLog.create({ data: { userId: user.id, amount: 5, reason: 'Reserva confirmada' } })
-  await prisma.user.update({ where: { id: user.id }, data: { points: { increment: 5 } } })
+      const conflict = await tx.appointment.findFirst({
+        where: {
+          barberId,
+          status: { not: 'CANCELLED' },
+          startTime: { lt: end },
+          endTime: { gt: start },
+        },
+      })
+      if (conflict) throw Object.assign(new Error('slot_taken'), { code: 409 })
 
-  return NextResponse.json(appointment)
+      const block = await tx.unavailabilityBlock.findFirst({
+        where: {
+          barberId,
+          startTime: { lt: end },
+          endTime: { gt: start },
+        },
+      })
+      if (block) throw Object.assign(new Error('slot_taken'), { code: 409 })
+
+      const appt = await tx.appointment.create({
+        data: {
+          clientId: user.id,
+          barberId,
+          serviceId,
+          startTime: start,
+          endTime: end,
+          status: 'CONFIRMED',
+          autoAssigned: !!autoAssigned,
+        },
+        include: {
+          service: true,
+          barber: { include: { user: { select: { name: true } } } },
+        },
+      })
+
+      await tx.pointsLog.create({ data: { userId: user.id, amount: 5, reason: 'Reserva confirmada' } })
+      await tx.user.update({ where: { id: user.id }, data: { points: { increment: 5 } } })
+
+      return appt
+    })
+
+    return NextResponse.json(appointment)
+  } catch (err: unknown) {
+    const e = err as Error
+    if (e.message === 'barber_unavailable') return NextResponse.json({ error: 'Barber unavailable' }, { status: 400 })
+    if (e.message === 'slot_taken') return NextResponse.json({ error: 'Slot no longer available' }, { status: 409 })
+    throw err
+  }
 }

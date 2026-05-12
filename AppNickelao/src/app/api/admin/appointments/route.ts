@@ -14,7 +14,10 @@ export async function GET(req: Request) {
   const dayStart = new Date(`${dateStr}T00:00:00.000Z`)
   const dayEnd   = new Date(`${dateStr}T23:59:59.999Z`)
 
-  // Auth and barbers in parallel — saves one round-trip
+  if (isNaN(dayStart.getTime())) {
+    return NextResponse.json({ error: 'Invalid date' }, { status: 400 })
+  }
+
   const [user, barbers] = await Promise.all([
     getCurrentUser(),
     prisma.barber.findMany({
@@ -28,10 +31,10 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
+  const isAdmin = ['ADMIN_SHOP', 'ADMIN_GENERAL'].includes(user.role)
   const barberIds = barbers.map(b => b.id)
   const nameById  = Object.fromEntries(barbers.map(b => [b.id, b.user.name ?? '—']))
 
-  // Appointments and blocks in parallel, no nested barber JOIN (use nameById instead)
   const [appointments, blocks] = await Promise.all([
     prisma.appointment.findMany({
       where: {
@@ -63,7 +66,10 @@ export async function GET(req: Request) {
       barberId: a.barberId,
       startTime: a.startTime.toISOString(),
       endTime: a.endTime.toISOString(),
-      client: { name: a.client.name ?? 'Cliente', phone: a.client.phone ?? '' },
+      client: {
+        name: a.client.name ?? 'Cliente',
+        ...(isAdmin && { phone: a.client.phone ?? '' }),
+      },
       barber: nameById[a.barberId] ?? '—',
       service: { name: a.service.name, duration: a.service.duration },
       autoAssigned: a.autoAssigned,

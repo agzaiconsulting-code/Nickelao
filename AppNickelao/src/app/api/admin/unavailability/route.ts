@@ -16,13 +16,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
+  const start = new Date(startTime)
+  const end = new Date(endTime)
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return NextResponse.json({ error: 'Invalid dates' }, { status: 400 })
+  }
+  if (start >= end) {
+    return NextResponse.json({ error: 'startTime must be before endTime' }, { status: 400 })
+  }
+
+  const barber = await prisma.barber.findUnique({ where: { id: barberId } })
+  if (!barber) return NextResponse.json({ error: 'Barber not found' }, { status: 404 })
+
   const block = await prisma.unavailabilityBlock.create({
-    data: {
-      barberId,
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
-      reason: reason ?? null,
-    },
+    data: { barberId, startTime: start, endTime: end, reason: reason ?? null },
   })
 
   return NextResponse.json(block, { status: 201 })

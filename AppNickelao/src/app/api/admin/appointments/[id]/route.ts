@@ -14,6 +14,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const appt = await prisma.appointment.findUnique({ where: { id } })
   if (!appt) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  // BARBERs can only cancel their own appointments
+  if (user.role === 'BARBER') {
+    const barber = await prisma.barber.findUnique({ where: { userId: user.id } })
+    if (!barber || appt.barberId !== barber.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+  }
+
   await prisma.appointment.update({ where: { id }, data: { status: 'CANCELLED' } })
   return NextResponse.json({ ok: true })
 }

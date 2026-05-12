@@ -13,6 +13,18 @@ export async function GET(req: NextRequest) {
   const q = searchParams.get('q') ?? ''
   const blockedOnly = searchParams.get('blocked') === 'true'
 
+  // Listing blocked users is admin-only
+  if (blockedOnly && !['ADMIN_SHOP', 'ADMIN_GENERAL'].includes(user.role)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  // BARBERs can only search (not enumerate all users)
+  if (!q && user.role === 'BARBER') {
+    return NextResponse.json([])
+  }
+
+  const isAdmin = ['ADMIN_SHOP', 'ADMIN_GENERAL'].includes(user.role)
+
   const users = await prisma.user.findMany({
     where: {
       role: 'CLIENT',
@@ -29,13 +41,13 @@ export async function GET(req: NextRequest) {
     select: {
       id: true,
       name: true,
-      phone: true,
-      email: true,
-      isBlocked: true,
-      blockedReason: true,
-      blockedAt: true,
+      phone: isAdmin,
+      email: isAdmin,
+      isBlocked: isAdmin,
+      blockedReason: isAdmin,
+      blockedAt: isAdmin,
     },
-    ...(q ? { take: 20 } : {}),
+    take: 20,
   })
 
   return NextResponse.json(users)
