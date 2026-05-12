@@ -472,7 +472,18 @@ function DashboardSection() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <div style={{ color: '#A7A8A3', fontSize: '0.9rem', textAlign: 'center', padding: '4rem 0' }}>Cargando…</div>
+  if (loading) return (
+    <div style={{ padding: '2rem', maxWidth: 960, margin: '0 auto' }}>
+      <div style={{ background: 'linear-gradient(135deg, #1E2A27 0%, #2d3f3b 100%)', borderRadius: 16, padding: '1.75rem 2rem', marginBottom: '1.75rem', height: 88 }} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+        {[1,2,3,4].map(i => <div key={i} style={{ background: '#f0efe1', borderRadius: 14, height: 96, animation: 'pulse 1.4s ease-in-out infinite' }} />)}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+        {[1,2,3,4].map(i => <div key={i} style={{ background: '#f0efe1', borderRadius: 14, height: 200, animation: 'pulse 1.4s ease-in-out infinite' }} />)}
+      </div>
+      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
+    </div>
+  )
   if (!data) return <div style={{ color: '#c0392b', textAlign: 'center', padding: '4rem 0' }}>Error al cargar el dashboard</div>
 
   const totalApptStatus = Object.values(data.appointments.byStatus).reduce((a, b) => a + b, 0)
@@ -792,7 +803,12 @@ function ConfigSection({ role }: { role: string }) {
 
 export default function AdminPage() {
   const router = useRouter()
-  const [session, setSession] = useState<{ user: { name?: string | null; image?: string | null; role?: string } } | null>(null)
+  const [session, setSession] = useState<{ user: { name?: string | null; image?: string | null; role?: string } } | null>(() => {
+    try {
+      const cached = JSON.parse(typeof window !== 'undefined' ? (localStorage.getItem('nic_session_user') ?? 'null') : 'null')
+      return cached ? { user: cached } : null
+    } catch { return null }
+  })
   const [activeSection, setActiveSection] = useState<'calendario' | 'bloqueados' | 'configuracion' | 'dashboard'>('calendario')
   const [local, setLocal] = useState('Foz')
   const [today] = useState(() => new Date())
