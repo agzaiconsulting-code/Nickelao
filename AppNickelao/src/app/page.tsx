@@ -378,7 +378,30 @@ const CAT_LABELS: Record<string, string> = { POPULARES: 'Populares', CORTE: 'Cor
 type DbService = { id: string; name: string; duration: number; price: number; category: string }
 type DbBarber  = { id: string; name: string }
 
-function BookingSection({ onAuthRequired, isLoggedIn }: { onAuthRequired: () => void; isLoggedIn: boolean }) {
+const BOOKSY_URL = 'https://booksy.com/es-es/165087_nick-home-barberia_barberia_62861_foz'
+
+function BookingSection() {
+  return (
+    <section id="reservas" style={{ padding: '5rem 2rem', background: 'var(--cream)', textAlign: 'center' }}>
+      <div style={{ maxWidth: 560, margin: '0 auto' }}>
+        <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: '0.6rem' }}>Cita previa</div>
+        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: '1rem' }}>Reserva tu cita</h2>
+        <p style={{ color: 'var(--text-mid)', fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem' }}>
+          Reserva tu cita de forma fácil y rápida a través de Booksy.<br />Elige tu servicio, peluquero y horario favorito.
+        </p>
+        <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer"
+          style={{ display: 'inline-block', fontFamily: "'DM Sans', sans-serif", fontSize: '1rem', fontWeight: 700, padding: '1rem 2.5rem', borderRadius: 8, background: 'var(--gold)', color: 'var(--green-dark)', textDecoration: 'none', letterSpacing: '0.01em', transition: 'all 0.2s' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold)'; (e.currentTarget as HTMLAnchorElement).style.transform = '' }}>
+          Reservar en Booksy →
+        </a>
+      </div>
+    </section>
+  )
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _BookingSection_DISABLED({ onAuthRequired, isLoggedIn }: { onAuthRequired: () => void; isLoggedIn: boolean }) {
   const [local, setLocal]               = useState('Foz')
   const [barberPref, setBarberPref]     = useState('auto')   // 'auto' | barberId
   const [serviceId, setServiceId]       = useState('')
@@ -797,7 +820,7 @@ export default function LandingPage() {
           <Image src="/HeaderLogo.png" alt="Nickelao Barber" width={130} height={36} style={{ objectFit: 'contain' }} />
         </a>
         <nav className="landing-nav" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 2, justifyContent: 'center' }}>
-          {[['#reservas', 'Reserva'], ['#servicios', 'Servicios'], ['#nosotros', 'Quiénes somos'], ['#contacto', 'Contacto']].map(([href, label]) => (
+          {[[BOOKSY_URL, 'Reserva'], ['#servicios', 'Servicios'], ['#nosotros', 'Quiénes somos'], ['#contacto', 'Contacto']].map(([href, label]) => (
             <a key={href} href={href} style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-mid)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: 6, transition: 'background 0.18s, color 0.18s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--sage-light)'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--green-dark)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = ''; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-mid)' }}>
@@ -850,7 +873,7 @@ export default function LandingPage() {
             style={{ position: 'absolute', top: 72, left: 0, right: 0, background: 'var(--cream)', borderBottom: '1px solid var(--cream-mid)', padding: '1rem 0' }}
             onClick={e => e.stopPropagation()}
           >
-            {[['#reservas', 'Reserva'], ['#servicios', 'Servicios'], ['#nosotros', 'Quiénes somos'], ['#contacto', 'Contacto']].map(([href, label]) => (
+            {[[BOOKSY_URL, 'Reserva'], ['#servicios', 'Servicios'], ['#nosotros', 'Quiénes somos'], ['#contacto', 'Contacto']].map(([href, label]) => (
               <a key={href} href={href} onClick={() => setMobileMenu(false)}
                 style={{ display: 'block', padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: 500, color: 'var(--text-dark)', textDecoration: 'none', borderBottom: '1px solid var(--cream-mid)' }}>
                 {label}
@@ -909,12 +932,12 @@ export default function LandingPage() {
             Barbería de confianza en Foz y Mondoñedo.<br />Cortes de precisión, afeitados clásicos y mucho más.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => document.getElementById('reservas')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--gold)', color: 'var(--green-dark)', cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '0.01em' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--gold)'; (e.currentTarget as HTMLButtonElement).style.transform = '' }}>
+            <a href={BOOKSY_URL} target="_blank" rel="noopener noreferrer"
+              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', fontWeight: 600, padding: '0.85rem 2rem', borderRadius: 8, border: 'none', background: 'var(--gold)', color: 'var(--green-dark)', cursor: 'pointer', transition: 'all 0.2s', letterSpacing: '0.01em', textDecoration: 'none', display: 'inline-block' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold)'; (e.currentTarget as HTMLAnchorElement).style.transform = '' }}>
               Reservar cita
-            </button>
+            </a>
             <button onClick={() => document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
               style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', fontWeight: 500, padding: '0.85rem 2rem', borderRadius: 8, border: '1.5px solid rgba(210,225,210,0.4)', background: 'transparent', color: 'var(--cream)', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--cream)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)' }}
@@ -926,7 +949,7 @@ export default function LandingPage() {
       </div>
 
       {/* BOOKING */}
-      <BookingSection onAuthRequired={() => openAuth()} isLoggedIn={!!session?.user} />
+      <BookingSection />
 
       {/* SERVICES */}
       <ServicesSection />
@@ -1088,7 +1111,7 @@ export default function LandingPage() {
           <div>
             <h4 style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', marginBottom: '1rem' }}>Navegación</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              {[['#reservas', 'Reservar cita'], ['#servicios', 'Servicios'], ['#nosotros', 'Quiénes somos'], ['#contacto', 'Contacto']].map(([href, label]) => (
+              {[[BOOKSY_URL, 'Reservar cita'], ['#servicios', 'Servicios'], ['#nosotros', 'Quiénes somos'], ['#contacto', 'Contacto']].map(([href, label]) => (
                 <li key={href}><a href={href} style={{ fontSize: '0.85rem', color: 'rgba(175,195,173,0.9)', textDecoration: 'none', transition: 'color 0.18s' }}
                   onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = 'var(--cream)'}
                   onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(175,195,173,0.9)'}>{label}</a></li>
